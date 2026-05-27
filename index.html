@@ -1,380 +1,430 @@
 <!DOCTYPE html>
 <html lang="pt">
 <head>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500&display=swap" rel="stylesheet">
   <meta charset="UTF-8" />
-  <title>Vodafone Paredes de Coura</title>
+  <title>Horários Primavera</title>
   <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no" />
   <style>
-    html {
-      font-size: 16px;
-      box-sizing: border-box;
+    :root {
+      --bg: #edf1f2;
+      --card: rgba(255,255,255,0.72);
+      --text: #1b1b1b;
+      --muted: rgba(0,0,0,0.55);
+      --border: rgba(0,0,0,0.08);
+      --pink-light: #f4a8c7;
+      --pink: #ee6aa7;
+      --pink-strong: #ff4f8b;
+      --coral: #ff5a4f;
+      --red: #ff3b30;
+      --hover: rgba(255,90,79,0.08);
+      --selected: linear-gradient(135deg, #f4a8c7 0%, #ff5a4f 100%);
     }
-    *, *:before, *:after {
-      box-sizing: inherit;
-    }
+    html { font-size: 16px; box-sizing: border-box; }
+    *, *:before, *:after { box-sizing: inherit; }
     body {
       margin: 0;
-      font-family: 'Arial', sans-serif;
-      background-image: url('https://i.postimg.cc/RFRYVBNk/vpc.png');
-      background-repeat: no-repeat;
-      background-attachment: fixed;
-      background-size: cover;
-      background-color: #ED1C24;
-      color: white;
+      font-family: Roboto, Helvetica, Arial, sans-serif;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      background: var(--bg);
+      color: var(--text);
       min-height: 100vh;
       overflow-x: hidden;
-      padding: 1rem;
+      letter-spacing: -0.02em;
     }
-    .content {
-      max-width: 960px;
-      margin: 0 auto;
-      height: 100vh;
-      overflow-y: auto;
-      padding: 1rem;
+    .content { max-width: 1400px; margin: 0 auto; padding: 2rem 1.25rem 6rem; }
+    .hero {
+      display: flex; align-items: center; justify-content: center; gap: 1.25rem;
+      margin-top: 1rem; margin-bottom: 1.5rem;
     }
-    h1 {
-      text-align: center;
-      font-size: 2.5rem;
-      margin-bottom: 1.5rem;
-      user-select: none;
-      text-shadow: 2px 2px 5px rgba(0,0,0,0.6);
+    .hero-logo { width: 84px; height: 84px; object-fit: contain; filter: drop-shadow(0 6px 20px rgba(255,90,79,0.15)); }
+    .hero-text { display: flex; flex-direction: column; line-height: 0.9; }
+    .hero-text span:first-child {
+      font-family: "Cormorant Garamond", serif;
+      font-size: clamp(3rem, 7vw, 5.5rem);
+      font-weight: 600; letter-spacing: -0.06em; line-height: 0.85;
     }
-
-    .day-container {
-      margin-bottom: 2rem;
-      padding: 1rem;
-      border-radius: 0.5rem;
+    .hero-text span:last-child {
+      font-family: Roboto, Helvetica, Arial, sans-serif;
+      font-size: clamp(1rem, 2vw, 1.6rem);
+      font-weight: 500; text-transform: uppercase; letter-spacing: 0.08em; color: rgba(0,0,0,0.55);
     }
-    .day-container > h2 {
-      text-align: center;
-      margin-bottom: 1rem;
-      font-weight: 800;
-      text-shadow: 2px 2px 4px rgba(0,0,0,0.6);
-      user-select: none;
-    }
-
+    .day-container { margin-bottom: 3rem; padding: 0 2rem; }
+    .day-container > h2 { font-size: 1.1rem; font-weight: 900; text-transform: uppercase; margin-bottom: 1rem; letter-spacing: -0.04em; }
     table {
-      width: 100%;
-      border-collapse: separate;
-      border-spacing: 0;
-      margin-bottom: 1rem;
-      background-color: rgba(0, 0, 0, 0.2);
-      backdrop-filter: blur(2px);
-      -webkit-backdrop-filter: blur(2px);
-      box-shadow: 0 0.25rem 0.625rem rgba(0, 0, 0, 0.3);
-      border-radius: 0.5rem;
-      font-size: 1.2rem;
-      table-layout: fixed;
-      word-wrap: break-word;
+      width: 100%; border-collapse: collapse;
+      background: var(--card);
+      backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+      border: 1px solid var(--border);
       overflow: hidden;
-    }
-
-    /* primeira coluna (hora) mais estreita */
-    table th:first-child,
-    table td:first-child {
-      width: 15%;
-      white-space: nowrap;
-    }
-
-    /* segunda e terceira colunas ocupam o resto */
-    table th:nth-child(2),
-    table td:nth-child(2),
-    table th:nth-child(3),
-    table td:nth-child(3) {
-      width: 42.5%;
-    }
-    th, td {
-      padding: 0.75rem 0.5rem;
-      text-align: center;
-      border-bottom: 1px solid rgba(255,255,255,0.15);
-      user-select: none;
-      overflow-wrap: break-word;
-      border-right: 1px solid rgba(255,255,255,0.15);
-    }
-
-    tr > th:last-child,
-    tr > td:last-child {
-      border-right: none;
-    }
-
-    tbody tr:last-child td {
-      border-bottom: none;
-    }
-
-    thead tr th:first-child {
-      border-top-left-radius: 0.5rem;
-    }
-
-    thead tr th:last-child {
-      border-top-right-radius: 0.5rem;
-    }
-
-    tbody tr:last-child td:first-child {
-      border-bottom-left-radius: 0.5rem;
-    }
-
-    tbody tr:last-child td:last-child {
-      border-bottom-right-radius: 0.5rem;
-    }
-
-    th {
-      background-color: rgba(0,0,0,0.4);
-      font-weight: bold;
-    }
-    td.selectable:hover {
-      cursor: pointer;
-      background-color: rgba(255,255,255,0.15);
-      transition: background-color 0.3s;
-    }
-    td.selected {
-      background-color: rgba(255,255,255,0.25);
-      font-weight: bold;
-      user-select: text;
-    }
-
-    .selected-artists {
-      font-size: 1rem !important;
-      margin: 2rem auto 6rem;
-      background-color: rgba(0, 0, 0, 0.4);
-      backdrop-filter: blur(2px);
-      -webkit-backdrop-filter: blur(2px);
-      padding: 2rem 2.5rem;
-      border-radius: 0.5rem;
-      max-width: 900px;
-      box-shadow: 0 0 15px rgba(0,0,0,0.6);
-      color: white;
-      font-family: 'Arial', sans-serif;
-      overflow-wrap: break-word;
-      user-select: text;
-    }
-    .selected-artists h2 {
-      font-size: 1.4rem !important;
-      font-weight: 700;
-      margin-bottom: 1rem;
-      text-align: center;
-      user-select: none;
-    }
-    .selected-artists h3 {
-      font-size: 1.2rem !important;
-      font-weight: 600;
-      margin: 0;
-      user-select: none;
-    }
-    .selected-artists ul {
-      list-style: none;
-      padding-left: 0;
-      margin-top: 0.5rem;
-    }
-    .selected-artists li {
-      font-size: 1rem !important;
-      font-weight: 600;
-      margin: 0.3rem 0;
-      padding: 0.4rem 1rem;
-      background-color: rgba(255,255,255,0.2);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.06);
       border-radius: 0.4rem;
-      line-height: 1.6;
-      color: white;
-      cursor: default;
-      transition: background-color 0.3s ease;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      user-select: text;
+      table-layout: fixed;
     }
-
+    thead { background: linear-gradient(90deg, rgba(244,168,199,0.18), rgba(255,90,79,0.12)); }
+    th {
+      color: var(--text); font-weight: 800; text-transform: uppercase;
+      letter-spacing: 0.04em; padding: 1.15rem 0.75rem; text-align: center; font-size: 0.95rem;
+    }
+    td {
+      color: var(--text); border-top: none; border-right: none;
+      text-align: center; vertical-align: middle;
+      padding: 1.4rem 0.8rem; font-size: 1rem; font-weight: 500; height: 44px;
+      transition: opacity 0.2s ease; background-color: transparent; background-clip: padding-box; position: relative;
+    }
+    tr td:last-child, tr th:last-child { border-right: none; }
+    tbody tr td:first-child { border-top: 1px solid rgba(0,0,0,0.08); border-right: 1px solid rgba(0,0,0,0.08); }
+    thead th:first-child { border-right: 1px solid rgba(0,0,0,0.08); }
+    table th:first-child, table td:first-child {
+      font-weight: 700; color: rgba(0,0,0,0.55); font-size: 1rem; text-align: center; vertical-align: middle;
+      width: 70px;
+    }
+    td.selectable { padding: 0.15rem; }
+    td.selectable:hover { cursor: pointer; }
+    td.selected { position: relative; color: white; font-weight: 700; overflow: hidden; transform: translateZ(0); }
+    .selected-artists {
+      margin-top: 4rem; padding: 2rem;
+      background: rgba(255,255,255,0.72);
+      border: 1px solid rgba(0,0,0,0.06); border-radius: 2rem;
+      backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+      box-shadow: 0 20px 60px rgba(0,0,0,0.06);
+    }
+    .selected-header { display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin-bottom: 1.25rem; }
+    .selected-title-group { display: flex; flex-direction: column; gap: 0.35rem; }
+    .selected-kicker { font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.18em; font-weight: 700; color: #ff5a4f; }
+    .selected-artists h2 {
+      margin: 0; font-family: "Cormorant Garamond", serif;
+      font-size: clamp(2.2rem, 5vw, 3.5rem); font-weight: 500; line-height: 0.9; letter-spacing: -0.05em;
+    }
+    .selected-divider {
+      width: 100%; height: 1px; margin-bottom: 2rem;
+      background: linear-gradient(90deg, rgba(244,168,199,0), rgba(244,168,199,0.9), rgba(255,90,79,0.9), rgba(255,90,79,0));
+    }
     #download-image {
-      position: relative;
-      margin-left: auto;
-      display: block;
-      font-weight: 700;
-      background-color: #ED1C24;
-      color: white;
-      border: none;
-      border-radius: 0.5rem;
-      cursor: pointer;
-      box-shadow: 0 0 10px rgba(237,28,36,0.8);
-      transition: background-color 0.3s ease;
-      z-index: 1000;
-      user-select: none;
+      border: none; padding: 0.9rem 1.3rem; border-radius: 999px;
+      font-size: 0.82rem; font-weight: 800; letter-spacing: 0.04em; text-transform: uppercase;
+      color: white; cursor: pointer;
+      background: linear-gradient(135deg, #f4a8c7, #ff5a4f);
+      box-shadow: 0 10px 28px rgba(255,90,79,0.22);
+      transition: transform 0.2s ease, filter 0.2s ease;
     }
-    #download-image:hover {
-      background-color: #c7151a;
+    #download-image:hover { transform: translateY(-2px); filter: brightness(1.05); }
+    .selected-artists h3 {
+      margin-top: 2rem; margin-bottom: 1rem; font-size: 0.9rem; font-weight: 800;
+      text-transform: uppercase; letter-spacing: 0.14em; color: rgba(0,0,0,0.48);
     }
+    .selected-artists ul { display: flex; flex-direction: column; gap: 0.75rem; list-style: none; padding: 0; margin: 0; }
+    .selected-artists li {
+      padding: 1rem 1.1rem; border-radius: 1.2rem;
+      background: linear-gradient(135deg, rgba(244,168,199,0.12), rgba(255,90,79,0.08));
+      border: 1px solid rgba(255,90,79,0.08); font-size: 0.95rem; font-weight: 600; color: #1b1b1b;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.03);
+    }
+    .selected-day-section { margin-bottom: 2rem; }
+    .selected-day-section h3 { margin-bottom: 1rem; font-size: 0.82rem; font-weight: 800; letter-spacing: 0.16em; text-transform: uppercase; color: rgba(0,0,0,0.45); }
+    .selected-table {
+      width: 100%; border-collapse: collapse; overflow: hidden; border-radius: 0.4rem;
+      background: rgba(255,255,255,0.55); border: 1px solid rgba(0,0,0,0.06);
+      backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); table-layout: auto;
+    }
+    .selected-table tr:not(:last-child) td { border-bottom: 1px solid rgba(0,0,0,0.05); }
+    .selected-table td { padding: 1rem; vertical-align: middle; }
+    .selected-table-time { width: 92px; font-size: 0.74rem; font-weight: 800; letter-spacing: 0.06em; text-transform: uppercase; color: rgba(0,0,0,0.45); white-space: nowrap; }
+    .selected-table-artist { position: relative; font-size: 0.98rem; font-weight: 700; color: #1b1b1b; line-height: 1.25; padding-left: 1rem; }
+    .selected-table tr.conflict { background: linear-gradient(90deg, rgba(255,80,80,0.08), rgba(255,80,80,0.02)); }
+    .selected-table tr.conflict .selected-table-time { color: #ff3b30; }
+    .selected-table-artist::before {
+      content: ""; position: absolute; left: 0; top: 50%; width: 4px; height: 60%;
+      transform: translateY(-50%); border-radius: 999px;
+    }
+    .concert-card {
+      display: flex; flex-direction: column; align-items: flex-start; justify-content: center;
+      gap: 0.45rem; padding: 0.9rem 0.85rem; height: 100%; min-height: 100%;
+      border-radius: 1.2rem;
+      background: linear-gradient(135deg, rgba(244,168,199,0.18), rgba(255,90,79,0.14));
+      border: 1px solid rgba(255,90,79,0.08);
+      box-shadow: 0 6px 18px rgba(0,0,0,0.04);
+      text-align: left;
+      transition: transform 0.18s ease, filter 0.18s ease;
+    }
+    td.selectable:hover .concert-card { transform: translateY(-2px); filter: brightness(1.02); }
+    .concert-artist { font-size: 1rem; font-weight: 800; line-height: 1.05; letter-spacing: -0.03em; color: #111; }
+    .concert-time { font-size: 0.82rem; font-weight: 700; color: rgba(0,0,0,0.58); letter-spacing: -0.01em; }
+    td.selected .concert-card {
+      background: linear-gradient(135deg, #f4a8c7, #ff5a4f);
+      border: none; box-shadow: 0 10px 24px rgba(255,90,79,0.25);
+    }
+    td.selected .concert-artist, td.selected .concert-time { color: white; }
 
-    /* RESPONSIVO para telas pequenas */
-    @media (max-width: 600px) {
-      html {
-        font-size: 12px;
-      }
-      h1 {
-        font-size: 1.6rem;
-      }
-      .day-container {
-        padding: 0.5rem;
-      }
-      table {
-        font-size: 1rem;
-      }
-      th, td {
-        padding: 0.5rem 0.25rem;
-      }
-      .selected-artists {
-        font-size: 0.9rem !important;
-        padding: 1.5rem 1.5rem;
-        margin: 1rem auto 5rem;
-        max-width: 100%;
-      }
-      .selected-artists li {
-        font-size: 0.9rem !important;
-        white-space: normal;
-        text-overflow: clip;
-      }
-      #download-image {
-        padding: 0.4rem 0.8rem;
-        font-size: 0.7rem;
-      }
+    @media (max-width: 900px) {
+      html { font-size: 13px; }
+      body { overflow-x: hidden; }
+      .content { padding: 0.8rem 0.4rem 4rem; }
+      .day-container { padding: 20px; margin-bottom: 2rem; }
+      .day-container > h2 { font-size: 0.9rem; margin-bottom: 0.7rem; }
+      table { width: 100%; }
+      th, td { padding: 0.18rem; }
+      th { font-size: 0.52rem; line-height: 1; }
+      td { height: 28px; }
+      table th:first-child, table td:first-child { width: 42px; min-width: 42px; font-size: 0.5rem; padding: 0.1rem; }
+      .concert-card { padding: 0.45rem 0.35rem; border-radius: 0.3rem; gap: 0.25rem; }
+      .concert-artist { font-size: 0.68rem; line-height: 1.05; font-weight: 800; word-break: break-word; }
+      .concert-time { font-size: 0.46rem; line-height: 1.1; }
+      .hero { gap: 0.7rem; margin-top: 0.6rem; }
+      .hero-logo { width: 48px; height: 48px; }
+      .hero-text span:first-child { font-size: 2.3rem; }
+      .hero-text span:last-child { font-size: 0.7rem; }
+      .selected-artists { margin-top: 2rem; padding: 1rem; border-radius: 1.2rem; }
+      .selected-header { flex-direction: column; align-items: stretch; }
+      .selected-artists h2 { font-size: 2rem; }
+      #download-image { width: 100%; }
+      .selected-table td { padding: 0.7rem; }
+      .selected-table-time { width: 78px; font-size: 0.58rem; }
+      .selected-table-artist { font-size: 0.8rem; }
     }
   </style>
 </head>
 <body>
   <div class="content">
-    <h1>Vodafone Paredes de Coura</h1>
+    <div class="hero">
+      <img class="hero-logo"
+        src="https://i.postimg.cc/k5RPVtjX/Screenshot-2026-05-26-17-04-33-865-com-google-android-googlequicksearchbox-edit.png"
+        alt="Primavera Sound Logo" />
+      <div class="hero-text">
+        <span>Primavera Sound</span>
+        <span>Porto</span>
+      </div>
+    </div>
     <div id="schedule"></div>
-
     <div class="selected-artists" id="selected-artists">
-      <button id="download-image" title="Guardar imagem">Save Image</button>
-      <h2>Vodafone Paredes de Coura</h2>
+      <div class="selected-header">
+        <div class="selected-title-group">
+          <span class="selected-kicker">Your Schedule</span>
+          <h2>Primavera Sound Porto</h2>
+        </div>
+        <button id="download-image" title="Guardar imagem">Save Image</button>
+      </div>
+      <div class="selected-divider"></div>
       <div id="selected-artists-list"></div>
     </div>
   </div>
 
-  <!-- html2canvas cdn -->
   <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
-
   <script>
+    // ── helpers ──────────────────────────────────────────────────────────────
+    function timeToMinutes(timeStr) {
+      const [hh, mm] = timeStr.split(':').map(Number);
+      return ((hh < 6 ? hh + 24 : hh) * 60) + mm;
+    }
+    function timeToSortableNumber(timeStr) {
+      return timeToMinutes(timeStr);
+    }
+    function minsToLabel(totalMins) {
+      const hh = Math.floor(totalMins / 60) % 24;
+      const mm = totalMins % 60;
+      return `${String(hh).padStart(2,'0')}:${String(mm).padStart(2,'0')}`;
+    }
+
+    // ── data ─────────────────────────────────────────────────────────────────
     const data = {
-      "13 de Agosto": [
-        ["16:30", "BacanaPlay", "Being Dead"],
-        ["17:15", "Vodafone", "Samuel Úria"],
-        ["18:00", "BacanaPlay", "Unsafe Space Garden"],
-        ["18:40", "Vodafone", "Nilüfer Yanya"],
-        ["19:40", "BacanaPlay", "Cass McCombs"],
-        ["20:40", "Vodafone", "MJ Lenderman & The Wind"],
-        ["21:40", "BacanaPlay", "Don West"],
-        ["22:25", "Vodafone", "Zaho de Sagazan"],
-        ["23:35", "BacanaPlay", "Capicua"],
-        ["00:20", "Vodafone", "Vampire Weekend"],
-        ["01:50", "BacanaPlay", "Joey Valence & Brae"],
-        ["02:45", "BacanaPlay", "Badsista"]
+      "11 de junho": [
+        ["16:35","17:25","Primavera","Vaiapraia"],
+        ["16:45","17:35","Estrella","emmy Curl"],
+        ["17:40","18:30","Vodafone","Inês Marques Lucas"],
+        ["17:40","18:25","ZYN","The New Eves"],
+        ["18:35","19:25","Primavera","PAUS"],
+        ["18:40","19:30","Estrella","Nation of Language"],
+        ["19:35","20:30","ZYN","rusowsky"],
+        ["19:40","20:40","Vodafone","Sensible Soccers"],
+        ["20:45","22:00","Estrella","Big Thief"],
+        ["20:45","21:45","Primavera","Oklou"],
+        ["22:05","23:35","Vodafone","Ethel Cain"],
+        ["22:10","23:05","ZYN","Texas Is the Reason"],
+        ["23:40","00:55","Estrella","The xx"],
+        ["23:40","00:40","Primavera","Agriculture"],
+        ["01:00","02:15","Vodafone","KNEECAP"],
+        ["01:25","02:25","ZYN","Gelli Haha"],
+        ["02:40","03:40","Primavera","Ninajirachi"]
       ],
-      "14 de Agosto": [
-        ["16:30", "BacanaPlay", "Bed Legs"],
-        ["17:10", "Vodafone", "Linda Martini"],
-        ["18:00", "BacanaPlay", "Glockenwise"],
-        ["18:40", "Vodafone", "Terno Rei"],
-        ["19:40", "BacanaPlay", "La Lom"],
-        ["20:40", "Vodafone", "Perfume Genius"],
-        ["21:40", "BacanaPlay", "Fat Dog"],
-        ["22:40", "Vodafone", "Lola Young"],
-        ["23:40", "BacanaPlay", "Soft Play"],
-        ["00:35", "Vodafone", "Portugal. The Man"],
-        ["01:50", "BacanaPlay", "Maruja"],
-        ["03:00", "BacanaPlay", "The Hellp"]
+      "12 de junho": [
+        ["16:35","17:25","Primavera","Bestia Bebé"],
+        ["16:45","17:35","Estrella","Rita Vian"],
+        ["17:40","18:30","Vodafone","Buscabulla"],
+        ["17:40","18:25","ZYN","Annahstasia"],
+        ["18:35","19:25","Primavera","mark william lewis"],
+        ["18:40","19:30","Estrella","Baxter Dury"],
+        ["19:35","20:30","ZYN","Gisela João"],
+        ["19:40","20:40","Vodafone","Panda Bear"],
+        ["20:50","21:50","Estrella","Slowdive"],
+        ["20:50","21:50","Primavera","Mari Froes"],
+        ["22:00","23:00","Vodafone","Viagra Boys"],
+        ["22:00","23:00","ZYN","Black Country, New Road"],
+        ["23:10","00:40","Estrella","Gorillaz"],
+        ["23:20","00:20","Primavera","Water From Your Eyes"],
+        ["00:45","02:00","Vodafone","Bad Gyal"],
+        ["00:50","01:50","ZYN","Melt-Banana"],
+        ["02:05","03:05","Primavera","Joey Valence & Brae"]
       ],
-      "15 de Agosto": [
-        ["16:30", "BacanaPlay", "Memória de Peixe"],
-        ["17:10", "Vodafone", "Dino D'Santiago"],
-        ["18:00", "BacanaPlay", "Cassandra Jenkins"],
-        ["18:50", "Vodafone", "Geordie Greep"],
-        ["19:50", "BacanaPlay", "Bar Italia"],
-        ["20:45", "Vodafone", "Black Country, New Road"],
-        ["21:50", "BacanaPlay", "Lambrini Girls"],
-        ["22:35", "Vodafone", "King Krule"],
-        ["23:50", "BacanaPlay", "La Jungle"],
-        ["00:35", "Vodafone", "MK.Gee"],
-        ["01:35", "BacanaPlay", "Ela Minus"],
-        ["02:45", "BacanaPlay", "Jersey"]
+      "13 de junho": [
+        ["16:35","17:25","Primavera","Aiko el grupo"],
+        ["16:45","17:35","Estrella","NAPA"],
+        ["17:40","18:35","ZYN","The Sophs"],
+        ["17:45","18:40","Vodafone","Triángulo de Amor Bizarro"],
+        ["18:40","19:30","Estrella","Yard Act"],
+        ["18:45","19:35","Primavera","Duquesa"],
+        ["19:35","20:50","Vodafone","Mike D"],
+        ["19:40","20:40","ZYN","Criolo, Amaro & Dino"],
+        ["20:55","21:55","Estrella","JADE"],
+        ["21:00","22:00","Primavera","Sudan Archives"],
+        ["22:05","23:05","Vodafone","Amaarae"],
+        ["22:05","23:05","ZYN","Smerz"],
+        ["23:15","00:30","Estrella","Massive Attack"],
+        ["00:40","02:10","Vodafone","IDLES"],
+        ["01:00","02:00","ZYN","fakemink"],
+        ["02:15","03:15","Primavera","Model/Actriz"]
       ],
-      "16 de Agosto": [
-        ["16:30", "BacanaPlay", "Cassete Pirata"],
-        ["17:10", "Vodafone", "Ana Frango Elétrico"],
-        ["18:10", "BacanaPlay", "Chastity Belt"],
-        ["18:55", "Vodafone", "DIIV"],
-        ["19:55", "BacanaPlay", "Hinds"],
-        ["20:40", "Vodafone", "Sharon Van Etten & The Attachment"],
-        ["21:45", "BacanaPlay", "Warmduscher"],
-        ["22:45", "Vodafone", "Air"],
-        ["00:00", "BacanaPlay", "Lander & Adriaan"],
-        ["01:00", "Vodafone", "Franz Ferdinand"],
-        ["02:20", "BacanaPlay", "Gurriers"],
-        ["03:25", "BacanaPlay", "Chinobi Live"]
+      "14 de junho": [
+        ["15:00","17:00","ZYN","SuM"],
+        ["17:00","19:00","ZYN","Xinobi"],
+        ["19:00","21:00","ZYN","Dixon"],
+        ["21:00","23:00","ZYN","Peggy Gou"]
       ]
     };
 
+    const stages = ["Estrella", "Vodafone", "ZYN", "Primavera"];
     const selectedArtists = {};
     const container = document.getElementById("schedule");
     const selectedContainer = document.getElementById("selected-artists-list");
 
     // Load saved selection
-    const saved = localStorage.getItem('selectedArtists');
-    if (saved) {
-      const parsed = JSON.parse(saved);
-      Object.keys(parsed).forEach(day => selectedArtists[day] = new Set(parsed[day]));
-    }
+    try {
+      const saved = localStorage.getItem('selectedArtists');
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        Object.keys(parsed).forEach(day => selectedArtists[day] = new Set(parsed[day]));
+      }
+    } catch(e) {}
 
+    // ── build tables ─────────────────────────────────────────────────────────
     Object.keys(data).forEach(day => {
       if (!selectedArtists[day]) selectedArtists[day] = new Set();
 
       const dayDiv = document.createElement("div");
       dayDiv.className = "day-container";
-
-      const title = document.createElement("h2");
-      title.textContent = day;
-      dayDiv.appendChild(title);
+      const titleEl = document.createElement("h2");
+      titleEl.textContent = day;
+      dayDiv.appendChild(titleEl);
 
       const table = document.createElement("table");
       const thead = document.createElement("thead");
-      thead.innerHTML = `<tr><th>Hora</th><th>Vodafone</th><th>BacanaPlay</th></tr>`;
+      thead.innerHTML = `<tr><th>Hora</th>${stages.map(s => `<th>${s}</th>`).join("")}</tr>`;
       table.appendChild(thead);
 
-      const tbody = document.createElement("tbody");
-      const horarios = {};
+      // Build a lookup: concertsByStage[stage] = sorted list of concerts
+      // Key insight: use minutes as the canonical unit everywhere
+      const concertsByStage = {};
+      stages.forEach(s => concertsByStage[s] = []);
 
-      data[day].forEach(([hora, palco, artista]) => {
-        if (!horarios[hora]) horarios[hora] = {};
-        horarios[hora][palco] = artista;
+      data[day].forEach(([start, end, stage, artist]) => {
+        if (!concertsByStage[stage]) return;
+        concertsByStage[stage].push({
+          artist, stage, start, end,
+          startMins: timeToMinutes(start),
+          endMins: timeToMinutes(end)
+        });
       });
 
-      Object.keys(horarios).forEach(hora => {
+      // Generate 30-min slot boundaries (in absolute minutes)
+      let allMins = [];
+      data[day].forEach(([start, end]) => {
+        allMins.push(timeToMinutes(start), timeToMinutes(end));
+      });
+      const minTime = Math.floor(Math.min(...allMins) / 30) * 30;
+      const maxTime = Math.ceil(Math.max(...allMins) / 30) * 30;
+
+      const slots = []; // each slot is absolute minutes
+      for (let t = minTime; t < maxTime; t += 30) slots.push(t);
+
+      // For each stage, track which slot index it's currently "occupied until"
+      // occupiedUntil[stage] = slot index where the current rowspan ends
+      const occupiedUntil = {};
+      stages.forEach(s => occupiedUntil[s] = 0);
+
+      // For each stage, track which concert index we're on
+      const concertIdx = {};
+      stages.forEach(s => concertIdx[s] = 0);
+
+      const tbody = document.createElement("tbody");
+
+      slots.forEach((slotMins, slotIndex) => {
         const tr = document.createElement("tr");
+
+        // Time label cell
         const tdHora = document.createElement("td");
-        tdHora.textContent = hora;
+        tdHora.textContent = minsToLabel(slotMins);
         tr.appendChild(tdHora);
 
-        ["Vodafone","BacanaPlay"].forEach(palco => {
-          const td = document.createElement("td");
-          const artista = horarios[hora][palco];
-          if (artista) {
-            td.textContent = artista;
-            td.classList.add("selectable");
-
-            const shortPalco = palco === "Vodafone" ? "[V]" : "[BP]";
-            const entry = `${shortPalco} ${hora} - ${artista}`;
-
-            if (selectedArtists[day].has(entry)) td.classList.add("selected");
-
-            td.addEventListener("click", () => {
-              if (selectedArtists[day].has(entry)) {
-                selectedArtists[day].delete(entry);
-                td.classList.remove("selected");
-              } else {
-                selectedArtists[day].add(entry);
-                td.classList.add("selected");
-              }
-              updateSelectedArtists();
-              saveSelectedArtists();
-            });
+        stages.forEach(stage => {
+          // If this stage is still occupied by a previous rowspan, skip
+          if (occupiedUntil[stage] > slotIndex) {
+            return; // don't add a td — the rowspan covers this
           }
+
+          // Find the concert that starts in this slot (within this 30-min window)
+          const concerts = concertsByStage[stage];
+          const idx = concertIdx[stage];
+          const concert = (idx < concerts.length && concerts[idx].startMins >= slotMins && concerts[idx].startMins < slotMins + 30)
+            ? concerts[idx]
+            : null;
+
+          if (!concert) {
+            tr.appendChild(document.createElement("td"));
+            return;
+          }
+
+          // Advance the concert index for this stage
+          concertIdx[stage]++;
+
+          const duration = concert.endMins - concert.startMins;
+          const rowspan = Math.max(1, Math.round(duration / 30));
+
+          // Mark this stage as occupied for the next (rowspan-1) slots
+          occupiedUntil[stage] = slotIndex + rowspan;
+
+          const td = document.createElement("td");
+          td.rowSpan = rowspan;
+          td.classList.add("selectable");
+          td.innerHTML = `
+            <div class="concert-card">
+              <div class="concert-artist">${concert.artist}</div>
+              <div class="concert-time">${concert.start} → ${concert.end}</div>
+            </div>`;
+
+          const entry = JSON.stringify({
+            artist: concert.artist,
+            stage: concert.stage,
+            start: concert.start,
+            end: concert.end
+          });
+
+          if (selectedArtists[day].has(entry)) td.classList.add("selected");
+
+          td.addEventListener("click", () => {
+            if (selectedArtists[day].has(entry)) {
+              selectedArtists[day].delete(entry);
+              td.classList.remove("selected");
+            } else {
+              selectedArtists[day].add(entry);
+              td.classList.add("selected");
+            }
+            updateSelectedArtists();
+            saveSelectedArtists();
+          });
+
           tr.appendChild(td);
         });
 
@@ -386,46 +436,69 @@
       container.appendChild(dayDiv);
     });
 
-    function timeToSortableNumber(timeStr) {
-      const [hh, mm] = timeStr.split(':').map(Number);
-      const hourAdjusted = (hh < 6) ? hh + 24 : hh;
-      return hourAdjusted * 60 + mm;
+    // ── selected artists panel ────────────────────────────────────────────────
+    function hasConflict(currentEntry, allEntries) {
+      const current = JSON.parse(currentEntry);
+      const currentStart = timeToMinutes(current.start);
+      const currentEnd = timeToMinutes(current.end);
+      return allEntries.some(entry => {
+        if (entry === currentEntry) return false;
+        const other = JSON.parse(entry);
+        const otherStart = timeToMinutes(other.start);
+        const otherEnd = timeToMinutes(other.end);
+        return currentStart < otherEnd && currentEnd > otherStart;
+      });
     }
 
     function updateSelectedArtists() {
       selectedContainer.innerHTML = "";
       Object.keys(selectedArtists).forEach(day => {
         if (selectedArtists[day].size === 0) return;
+        const section = document.createElement("div");
+        section.className = "selected-day-section";
+        const title = document.createElement("h3");
+        title.textContent = day;
+        section.appendChild(title);
 
-        const dayTitle = document.createElement("h3");
-        dayTitle.textContent = day;
-        selectedContainer.appendChild(dayTitle);
-
-        const ul = document.createElement("ul");
+        const table = document.createElement("table");
+        table.className = "selected-table";
+        const tbody = document.createElement("tbody");
 
         Array.from(selectedArtists[day])
-          .sort((a,b) => {
-            const getTime = str => str.split(' - ')[0];
-            return timeToSortableNumber(getTime(a)) - timeToSortableNumber(getTime(b));
-          })
-          .forEach(artist => {
-            const li = document.createElement("li");
-            li.textContent = artist;
-            ul.appendChild(li);
+          .sort((a, b) => timeToSortableNumber(JSON.parse(a).start) - timeToSortableNumber(JSON.parse(b).start))
+          .forEach(entry => {
+            const parsed = JSON.parse(entry);
+            const tr = document.createElement("tr");
+            if (hasConflict(entry, Array.from(selectedArtists[day]))) tr.classList.add("conflict");
+
+            const tdTime = document.createElement("td");
+            tdTime.className = "selected-table-time";
+            tdTime.textContent = `${parsed.stage} ${parsed.start} → ${parsed.end}`;
+
+            const tdArtist = document.createElement("td");
+            tdArtist.className = "selected-table-artist";
+            tdArtist.textContent = parsed.artist;
+
+            tr.appendChild(tdTime);
+            tr.appendChild(tdArtist);
+            tbody.appendChild(tr);
           });
 
-        selectedContainer.appendChild(ul);
+        table.appendChild(tbody);
+        section.appendChild(table);
+        selectedContainer.appendChild(section);
       });
     }
 
     function saveSelectedArtists() {
-      localStorage.setItem('selectedArtists', JSON.stringify(
-        Object.fromEntries(
-          Object.entries(selectedArtists).map(([day, set]) => [day, Array.from(set)])
-        )
-      ));
+      try {
+        localStorage.setItem('selectedArtists', JSON.stringify(
+          Object.fromEntries(Object.entries(selectedArtists).map(([day, set]) => [day, Array.from(set)]))
+        ));
+      } catch(e) {}
     }
 
+    // ── download ──────────────────────────────────────────────────────────────
     document.getElementById('download-image').addEventListener('click', async () => {
       const selectedArtistsDiv = document.querySelector('.selected-artists');
       const button = document.getElementById('download-image');
@@ -435,90 +508,54 @@
       const nextSibling = selectedArtistsDiv.nextSibling;
       const originalInline = {
         width: selectedArtistsDiv.style.width || '',
-        backgroundImage: selectedArtistsDiv.style.backgroundImage || '',
-        backgroundRepeat: selectedArtistsDiv.style.backgroundRepeat || '',
-        backgroundSize: selectedArtistsDiv.style.backgroundSize || '',
-        backgroundPosition: selectedArtistsDiv.style.backgroundPosition || '',
+        background: selectedArtistsDiv.style.background || '',
         backgroundColor: selectedArtistsDiv.style.backgroundColor || '',
+        border: selectedArtistsDiv.style.border || '',
+        borderRadius: selectedArtistsDiv.style.borderRadius || '',
+        boxShadow: selectedArtistsDiv.style.boxShadow || '',
+        backdropFilter: selectedArtistsDiv.style.backdropFilter || '',
+        color: selectedArtistsDiv.style.color || '',
         margin: selectedArtistsDiv.style.margin || '',
         padding: selectedArtistsDiv.style.padding || ''
       };
 
       const wrapper = document.createElement('div');
-      wrapper.setAttribute('aria-hidden','true');
-
-      wrapper.style.position = 'fixed';
-      wrapper.style.left = '50%';
-      wrapper.style.top = '50%';
-      wrapper.style.transform = 'translate(-50%, -50%)';
-      wrapper.style.zIndex = '9999';
-      wrapper.style.display = 'inline-block';
-      wrapper.style.padding = '24px';
-      wrapper.style.borderRadius = '12px';
-      wrapper.style.boxShadow = '0 30px 80px rgba(0,0,0,0.6)';
-      wrapper.style.background = "linear-gradient(rgba(0,0,0,0.15), rgba(0,0,0,0.25)), url('https://i.postimg.cc/qvHXw6HK/Captura-de-ecr-2025-08-08-203125.png')";
-      wrapper.style.backgroundSize = 'cover';
-      wrapper.style.backgroundPosition = 'center';
-      wrapper.style.backdropFilter = "blur(2px)";
-      wrapper.style.webkitBackdropFilter = "blur(2px)";
-      wrapper.style.overflow = 'visible';
+      wrapper.setAttribute('aria-hidden', 'true');
+      wrapper.style.cssText = `position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);z-index:9999;display:flex;align-items:stretch;padding:10px;border-radius:0px;overflow:visible;background:linear-gradient(135deg,#f7d0df 0%,#f4a8c7 35%,#ff7a6b 70%,#ff5a4f 100%);box-shadow:0 30px 80px rgba(255,90,79,0.25);`;
 
       const viewportW = Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0);
       const contentWidth = selectedArtistsDiv.scrollWidth || selectedArtistsDiv.offsetWidth || 700;
-      const minNeeded = contentWidth + 80;
-      const aspectRatio = 9 / 16;
-      
-      const desiredWidth = Math.min(Math.max(minNeeded, 700), Math.max(viewportW - 40, 400));
-      
-      const contentHeight = selectedArtistsDiv.scrollHeight;
-      const padding = 48; // padding do wrapper
-      const minHeight = desiredWidth / aspectRatio;
-
-      const desiredHeight = Math.max(minHeight, contentHeight + padding);
+      const desiredWidth = Math.min(Math.max(contentWidth + 120, 720), viewportW - 40);
+      const desiredHeight = selectedArtistsDiv.scrollHeight + 36;
 
       wrapper.style.width = desiredWidth + 'px';
       wrapper.style.height = desiredHeight + 'px';
 
-      selectedArtistsDiv.style.backgroundColor = 'rgba(0,0,0,0.35)';
-      selectedArtistsDiv.style.margin = '0';
+      selectedArtistsDiv.style.cssText += `;background:rgba(255,255,255,0.78);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border:1px solid rgba(0,0,0,0.08);border-radius:28px;box-shadow:0 12px 40px rgba(0,0,0,0.08);color:#111;padding:2rem;margin:0;width:auto;flex:1;`;
+
       parent.insertBefore(wrapper, selectedArtistsDiv);
       wrapper.appendChild(selectedArtistsDiv);
+      await new Promise(r => requestAnimationFrame(r));
+      await new Promise(r => requestAnimationFrame(r));
 
       try {
-        const canvas = await html2canvas(wrapper, {
-          scale: 2,
-          useCORS: true,
-          backgroundColor: null,
-          width: desiredWidth,
-          height: desiredHeight
-        });
-
+        const canvas = await html2canvas(wrapper, { scale: 2, useCORS: true, backgroundColor: null, width: desiredWidth, height: desiredHeight });
         const link = document.createElement('a');
-        link.download = 'artistas-selecionados.png';
+        link.download = 'primavera-sound-porto.png';
         link.href = canvas.toDataURL('image/png');
         link.click();
       } catch (err) {
         console.error('Erro ao gerar imagem:', err);
-        alert('Erro ao gerar a imagem. Checka a consola.');
+        alert('Erro ao gerar a imagem.');
       } finally {
         if (nextSibling) parent.insertBefore(selectedArtistsDiv, nextSibling);
         else parent.appendChild(selectedArtistsDiv);
         wrapper.remove();
-
-        selectedArtistsDiv.style.width = originalInline.width;
-        selectedArtistsDiv.style.backgroundImage = originalInline.backgroundImage;
-        selectedArtistsDiv.style.backgroundRepeat = originalInline.backgroundRepeat;
-        selectedArtistsDiv.style.backgroundSize = originalInline.backgroundSize;
-        selectedArtistsDiv.style.backgroundPosition = originalInline.backgroundPosition;
-        selectedArtistsDiv.style.backgroundColor = originalInline.backgroundColor;
-        selectedArtistsDiv.style.margin = originalInline.margin;
-        selectedArtistsDiv.style.padding = originalInline.padding;
-
+        Object.entries(originalInline).forEach(([k, v]) => selectedArtistsDiv.style[k] = v);
         button.style.display = 'block';
       }
     });
 
-    // render initial selected list
     updateSelectedArtists();
   </script>
 </body>

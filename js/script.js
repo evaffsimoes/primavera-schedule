@@ -249,8 +249,61 @@ function updateSelectedArtists() {
 
     const entriesArr = Array.from(selectedArtists[day]);
     const parsedEntries = entriesArr.map(e => JSON.parse(e));
-    
 
+    if (parsedEntries.length > 0) {
+      let minMins = Math.min(...parsedEntries.map(e => timeToMinutes(e.start)));
+      let maxMins = Math.max(...parsedEntries.map(e => timeToMinutes(e.end)));
+      const totalMins = maxMins - minMins;
+      const safeTotal = totalMins > 0 ? totalMins : 1;
+
+      const summaryDiv = document.createElement("div");
+      summaryDiv.className = "day-summary";
+
+      const sortedByStart = [...parsedEntries].sort((a, b) => timeToMinutes(a.start) - timeToMinutes(b.start));
+      const sortedByEnd = [...parsedEntries].sort((a, b) => timeToMinutes(a.end) - timeToMinutes(b.end));
+      const startLabel = sortedByStart[0].start;
+      const endLabel = sortedByEnd[0].end;
+
+      const sortedEntries = [...parsedEntries].sort((a, b) => timeToMinutes(a.start) - timeToMinutes(b.start));
+      let segmentsHTML = '';
+      let labelsHTML = '';
+
+      let lastTop0Center = -999;
+      let lastTop13Center = -999;
+
+      sortedEntries.forEach((c, idx) => {
+        const sMins = timeToMinutes(c.start);
+        const eMins = timeToMinutes(c.end);
+        const left = ((sMins - minMins) / safeTotal) * 100;
+        const width = ((eMins - sMins) / safeTotal) * 100;
+        segmentsHTML += `<div class="ds-segment ${c.stage.toLowerCase()}" style="left:${left}%;width:${width}%;"></div>`;
+
+        const centerPct = left + width / 2;
+        let topOffset = 0;
+
+        if (centerPct - lastTop0Center >= 10) {
+          topOffset = 0;
+          lastTop0Center = centerPct;
+        } else {
+          topOffset = 13;
+          lastTop13Center = centerPct;
+        }
+
+        let labelName = c.artist;
+        if (labelName.length > 8 && labelName.includes(" ")) {
+          labelName = labelName.replace(" ", "<br>");
+        }
+        labelsHTML += `<div class="ds-label ${c.stage.toLowerCase()}" style="left:${centerPct}%; top:${topOffset}px;">${labelName}</div>`;
+      });
+
+      const numC = parsedEntries.length;
+      summaryDiv.innerHTML = `
+        <div class="day-summary-text">${startLabel} &rarr; ${endLabel} &bull; ${numC} concerto${numC > 1 ? 's' : ''}</div>
+        <div class="day-summary-bar">${segmentsHTML}</div>
+        <div class="day-summary-labels">${labelsHTML}</div>
+      `;
+      section.appendChild(summaryDiv);
+    }
 
     const scheduleList = document.createElement("div");
     scheduleList.className = "schedule-list";
@@ -275,7 +328,7 @@ function updateSelectedArtists() {
               <span class="stage-badge">${parsed.stage}</span>
             </div>
           </div>
-          ${conflict ? '<div class="schedule-conflict-badge">ups</div>' : ''}
+          ${conflict ? '<div class="schedule-conflict-badge">oops</div>' : ''}
         `;
         scheduleList.appendChild(item);
       });
@@ -303,7 +356,7 @@ function saveSelectedArtists() {
 document.getElementById('download-image').addEventListener('click', async () => {
   const selectedArtistsDiv = document.querySelector('.selected-artists');
   const button = document.getElementById('download-image');
-  
+
   const daySections = Array.from(selectedArtistsDiv.querySelectorAll('.selected-day-section'));
   if (daySections.length === 0) return;
 
@@ -328,8 +381,8 @@ document.getElementById('download-image').addEventListener('click', async () => 
 
   const wrapper = document.createElement('div');
   wrapper.setAttribute('aria-hidden', 'true');
-  wrapper.style.cssText = `position:absolute;left:-9999px;top:0;display:flex;flex-direction:column;align-items:center;justify-content:center;background:linear-gradient(135deg, #f4a8c7, #ff5a4f);`;
-  
+  wrapper.style.cssText = `position:absolute;left:-9999px;top:0;display:flex;flex-direction:column;align-items:center;justify-content:center;background:#edf1f2;`;
+
   const frameInner = document.createElement('div');
   frameInner.style.cssText = `background:#fff;border-radius:1.2rem;padding:2rem 1.5rem;width:92%;box-shadow:0 10px 30px rgba(0,0,0,0.1);display:flex;flex-direction:column;`;
 
@@ -340,6 +393,10 @@ document.getElementById('download-image').addEventListener('click', async () => 
   frameInner.appendChild(selectedArtistsDiv);
   wrapper.appendChild(frameInner);
 
+  const exportScaleStyle = document.createElement('style');
+  exportScaleStyle.innerHTML = `html { font-size: 17.5px !important; } @media (max-width: 900px) { html { font-size: 14.5px !important; } }`;
+  document.head.appendChild(exportScaleStyle);
+
   for (let i = 0; i < daySections.length; i++) {
     const currentDay = daySections[i];
     daySections.forEach(ds => ds.style.display = (ds === currentDay) ? 'block' : 'none');
@@ -348,7 +405,7 @@ document.getElementById('download-image').addEventListener('click', async () => 
     await new Promise(r => requestAnimationFrame(r));
 
     const contentHeight = frameInner.scrollHeight;
-    
+
     let wrapperW = 540;
     let wrapperH = 960;
 
@@ -365,12 +422,12 @@ document.getElementById('download-image').addEventListener('click', async () => 
 
     try {
       const scale = 1080 / wrapperW;
-      const canvas = await html2canvas(wrapper, { 
-        scale: scale, 
-        useCORS: true, 
-        backgroundColor: '#ffffff', 
-        width: wrapperW, 
-        height: wrapperH 
+      const canvas = await html2canvas(wrapper, {
+        scale: scale,
+        useCORS: true,
+        backgroundColor: '#ffffff',
+        width: wrapperW,
+        height: wrapperH
       });
       const link = document.createElement('a');
       const dayNameText = currentDay.querySelector('h3').textContent.replace(/ /g, '_').toLowerCase();
@@ -387,6 +444,7 @@ document.getElementById('download-image').addEventListener('click', async () => 
   if (nextSibling) parent.insertBefore(selectedArtistsDiv, nextSibling);
   else parent.appendChild(selectedArtistsDiv);
   wrapper.remove();
+  exportScaleStyle.remove();
   Object.entries(originalInline).forEach(([k, v]) => selectedArtistsDiv.style[k] = v);
   button.style.display = 'block';
 });

@@ -138,6 +138,7 @@ function setupGroupListener() {
         });
       });
       updateSelectedArtists();
+      updateGroupMembersUI();
     }
   }, (error) => {
     showFlash("Database Error: " + error.message);
@@ -593,6 +594,26 @@ function showFlash(message) {
   setTimeout(() => flash.classList.remove('show'), 3000);
 }
 
+function updateGroupMembersUI() {
+  const membersListEl = document.getElementById('group-members-list');
+  if (!currentGroupId || friendsData.length === 0) {
+    membersListEl.style.display = 'none';
+    return;
+  }
+  
+  let html = `<div style="display: flex; flex-wrap: wrap; gap: 0.5rem; justify-content: center; margin-top: 0.5rem;">`;
+  friendsData.forEach(f => {
+    html += `<span style="display: flex; align-items: center; gap: 0.3rem; background: #f8f9fa; padding: 0.2rem 0.6rem; border-radius: 999px; border: 1px solid rgba(0,0,0,0.05); font-weight: 600; color: #111;">
+      <span style="display: inline-block; width: 10px; height: 10px; border-radius: 50%; background-color: ${f.color};"></span>
+      ${f.name}
+    </span>`;
+  });
+  html += `</div>`;
+  
+  membersListEl.innerHTML = html;
+  membersListEl.style.display = 'block';
+}
+
 document.getElementById('group-code-display').addEventListener('click', async () => {
   if (currentGroupId) {
     try {
@@ -698,6 +719,7 @@ document.getElementById('leave-confirm').addEventListener('click', async () => {
   
   friendsData = [];
   updateSelectedArtists(); // trigger redraw to remove avatars
+  updateGroupMembersUI();
   
   document.getElementById('active-group-info').style.display = 'none';
   document.getElementById('leave-group').style.display = 'none';

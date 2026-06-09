@@ -585,13 +585,24 @@ document.getElementById('download-image').addEventListener('click', async () => 
   button.style.display = 'block';
 });
 
-// opcoes user
+// Funções de Interface
 function showFlash(message) {
   const flash = document.getElementById('flash-message');
   flash.textContent = message;
   flash.classList.add('show');
   setTimeout(() => flash.classList.remove('show'), 3000);
 }
+
+document.getElementById('group-code-display').addEventListener('click', async () => {
+  if (currentGroupId) {
+    try {
+      await navigator.clipboard.writeText(currentGroupId);
+      showFlash("Code copied to clipboard!");
+    } catch (err) {
+      console.error("Failed to copy:", err);
+    }
+  }
+});
 
 // criar o grupo
 document.getElementById('create-group').addEventListener('click', () => {

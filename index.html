@@ -7,7 +7,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500&display=swap" rel="stylesheet">
   <meta charset="UTF-8" />
-  <title>Horários Primavera</title>
+  <title>Schedule Primavera</title>
   <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no" />
   <link rel="stylesheet" href="./css/style.css">
 </head>
@@ -31,7 +31,26 @@
       </div>
       <div class="selected-divider"></div>
       <div id="selected-artists-list"></div>
-      <button id="download-image" title="Guardar imagem">Export</button>
+      <div class="action-buttons">
+        <button id="download-image" title="Guardar imagem">Export</button>
+        <button id="share-schedule" title="Partilhar horário">Share</button>
+        <button id="clear-friends" title="Remover amigos" style="display:none;">Clean Friends</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Custom Alert / Toast -->
+  <div id="flash-message" class="flash-message"></div>
+
+  <!-- Custom Name Prompt Modal -->
+  <div id="name-modal" class="modal-overlay" style="display: none;">
+    <div class="modal-content">
+      <h3>Share Schedule</h3>
+      <input type="text" id="name-input" placeholder="Your name" autocomplete="off" />
+      <div class="modal-actions">
+        <button id="name-cancel" class="btn-cancel">Cancel</button>
+        <button id="name-confirm" class="btn-confirm">Share</button>
+      </div>
     </div>
   </div>
 

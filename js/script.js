@@ -83,6 +83,43 @@ const selectedArtists = {};
 const container = document.getElementById("schedule");
 const selectedContainer = document.getElementById("selected-artists-list");
 
+const friendColors = ['#ff5a4f', '#ee6aa7', '#feb400', '#b0cf0d', '#089e5f', '#f4a8c7'];
+let friendsData = [];
+try {
+  const savedFriends = localStorage.getItem('friendsData');
+  if (savedFriends) {
+    friendsData = JSON.parse(savedFriends);
+  }
+} catch (e) { }
+
+// Logic to import friends from URL
+const urlParams = new URLSearchParams(window.location.search);
+const importData = urlParams.get('import');
+if (importData) {
+  try {
+    const decoded = atob(importData);
+    const friendInfo = JSON.parse(decoded);
+    if (friendInfo && friendInfo.name && friendInfo.concerts) {
+      // Pick a color
+      const color = friendColors[friendsData.length % friendColors.length];
+      friendInfo.color = color;
+
+      // Check if friend already exists to prevent duplicates
+      friendsData = friendsData.filter(f => f.name !== friendInfo.name);
+      friendsData.push(friendInfo);
+
+      localStorage.setItem('friendsData', JSON.stringify(friendsData));
+    }
+
+    // Clean URL
+    const url = new URL(window.location);
+    url.searchParams.delete('import');
+    window.history.replaceState({}, '', url);
+  } catch (e) {
+    console.error("Erro ao importar amigo", e);
+  }
+}
+
 // Load saved selection
 try {
   const saved = localStorage.getItem('selectedArtists');
@@ -317,6 +354,18 @@ function updateSelectedArtists() {
         const conflict = hasConflict(entry, Array.from(selectedArtists[day]));
         if (conflict) item.classList.add("conflict");
 
+        // Encontrar os amigos que vão a este concerto
+        const attendingFriends = friendsData.filter(f => f.concerts.includes(parsed.artist));
+        let friendsHTML = '';
+        if (attendingFriends.length > 0) {
+          friendsHTML = '<div class="friends-avatars">';
+          attendingFriends.forEach(f => {
+            const initial = f.name.charAt(0).toUpperCase();
+            friendsHTML += `<div class="friend-avatar" style="background-color: ${f.color}" title="${f.name}">${initial}</div>`;
+          });
+          friendsHTML += '</div>';
+        }
+
         item.innerHTML = `
           <div class="schedule-time-stacked">
             <span class="time-start">${parsed.start}</span>
@@ -326,6 +375,7 @@ function updateSelectedArtists() {
             <div class="schedule-artist">${parsed.artist}</div>
             <div class="schedule-details">
               <span class="stage-badge">${parsed.stage}</span>
+              ${friendsHTML}
             </div>
           </div>
           ${conflict ? '<div class="schedule-conflict-badge">oops</div>' : ''}
@@ -436,7 +486,7 @@ document.getElementById('download-image').addEventListener('click', async () => 
       link.click();
       await new Promise(r => setTimeout(r, 500));
     } catch (err) {
-      console.error('Erro ao gerar imagem:', err);
+      console.error('Error generating image:', err);
     }
   }
 
@@ -447,6 +497,76 @@ document.getElementById('download-image').addEventListener('click', async () => 
   exportScaleStyle.remove();
   Object.entries(originalInline).forEach(([k, v]) => selectedArtistsDiv.style[k] = v);
   button.style.display = 'block';
+});
+
+// UI Helpers
+function showFlash(message) {
+  const flash = document.getElementById('flash-message');
+  flash.textContent = message;
+  flash.classList.add('show');
+  setTimeout(() => flash.classList.remove('show'), 3000);
+}
+
+function askName(callback) {
+  const modal = document.getElementById('name-modal');
+  const input = document.getElementById('name-input');
+  const cancel = document.getElementById('name-cancel');
+  const confirm = document.getElementById('name-confirm');
+  
+  modal.style.display = 'flex';
+  input.value = '';
+  input.focus();
+  
+  const close = () => { modal.style.display = 'none'; };
+  
+  cancel.onclick = close;
+  confirm.onclick = () => {
+    if(input.value.trim()) {
+      close();
+      callback(input.value.trim());
+    }
+  };
+}
+
+document.getElementById('share-schedule').addEventListener('click', () => {
+  const userConcerts = [];
+  Object.keys(selectedArtists).forEach(day => {
+    selectedArtists[day].forEach(entry => {
+      const parsed = JSON.parse(entry);
+      userConcerts.push(parsed.artist);
+    });
+  });
+
+  if (userConcerts.length === 0) {
+    showFlash("Select at least one concert");
+    return;
+  }
+
+  askName((name) => {
+    const payload = { name: name, concerts: userConcerts };
+    const encoded = btoa(unescape(encodeURIComponent(JSON.stringify(payload))));
+    const url = new URL(window.location);
+    url.searchParams.set('import', encoded);
+
+    navigator.clipboard.writeText(url.toString()).then(() => {
+      showFlash("Link copied! Send it to your friends.");
+    }).catch(err => {
+      showFlash("Error copying link.");
+    });
+  });
+});
+
+const clearFriendsBtn = document.getElementById('clear-friends');
+if (friendsData.length > 0) {
+  clearFriendsBtn.style.display = 'block';
+}
+clearFriendsBtn.addEventListener('click', () => {
+  if (confirm("Are you sure you want to remove all imported friends?")) {
+    friendsData = [];
+    localStorage.removeItem('friendsData');
+    clearFriendsBtn.style.display = 'none';
+    updateSelectedArtists();
+  }
 });
 
 updateSelectedArtists();

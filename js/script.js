@@ -27,7 +27,7 @@ function minsToLabel(totalMins) {
   return `${String(hh).padStart(2, '0')}:${String(mm).padStart(2, '0')}`;
 }
 
-// ── data ─────────────────────────────────────────────────────────────────
+// ── dados ────────────────────────────────────────────────────────────────
 const data = {
   "11 july": [
     ["16:35", "17:25", "Primavera", "Vaiapraia"],
@@ -173,7 +173,7 @@ function updateGroupData() {
 
 setupGroupListener();
 
-// Load saved selection
+// saved selection
 try {
   const saved = localStorage.getItem('selectedArtists');
   if (saved) {
@@ -193,16 +193,16 @@ Object.keys(data).forEach(day => {
   titleEl.style.justifyContent = "space-between";
   titleEl.style.alignItems = "center";
   titleEl.innerHTML = `<span>${day}</span> <button class="btn-clear-day" title="Clear this day">Clear Day</button>`;
-  
+
   const clearBtn = titleEl.querySelector('.btn-clear-day');
   clearBtn.addEventListener('click', () => {
     selectedArtists[day].clear();
-    
+
     const dayTable = dayDiv.querySelector('table');
     if (dayTable) {
       dayTable.querySelectorAll('.selectable.selected').forEach(td => td.classList.remove('selected'));
     }
-    
+
     updateSelectedArtists();
     saveSelectedArtists();
     updateGroupData();
@@ -216,8 +216,6 @@ Object.keys(data).forEach(day => {
   thead.innerHTML = `<tr><th>Time</th>${stages.map(s => `<th>${s}</th>`).join("")}</tr>`;
   table.appendChild(thead);
 
-  // Build a lookup: concertsByStage[stage] = sorted list of concerts
-  // Key insight: use minutes as the canonical unit everywhere
   const concertsByStage = {};
   stages.forEach(s => concertsByStage[s] = []);
 
@@ -230,7 +228,7 @@ Object.keys(data).forEach(day => {
     });
   });
 
-  // Generate 30-min slot boundaries (in absolute minutes)
+  // 30 minutos slots
   let allMins = [];
   data[day].forEach(([start, end]) => {
     allMins.push(timeToMinutes(start), timeToMinutes(end));
@@ -238,15 +236,12 @@ Object.keys(data).forEach(day => {
   const minTime = Math.floor(Math.min(...allMins) / 30) * 30;
   const maxTime = Math.ceil(Math.max(...allMins) / 30) * 30;
 
-  const slots = []; // each slot is absolute minutes
+  const slots = [];
   for (let t = minTime; t < maxTime; t += 30) slots.push(t);
 
-  // For each stage, track which slot index it's currently "occupied until"
-  // occupiedUntil[stage] = slot index where the current rowspan ends
   const occupiedUntil = {};
   stages.forEach(s => occupiedUntil[s] = 0);
 
-  // For each stage, track which concert index we're on
   const concertIdx = {};
   stages.forEach(s => concertIdx[s] = 0);
 
@@ -255,18 +250,16 @@ Object.keys(data).forEach(day => {
   slots.forEach((slotMins, slotIndex) => {
     const tr = document.createElement("tr");
 
-    // Time label cell
+    // time label cell
     const tdHora = document.createElement("td");
     tdHora.textContent = minsToLabel(slotMins);
     tr.appendChild(tdHora);
 
     stages.forEach(stage => {
-      // If this stage is still occupied by a previous rowspan, skip
       if (occupiedUntil[stage] > slotIndex) {
-        return; // don't add a td — the rowspan covers this
+        return;
       }
 
-      // Find the concert that starts in this slot (within this 30-min window)
       const concerts = concertsByStage[stage];
       const idx = concertIdx[stage];
       const concert = (idx < concerts.length && concerts[idx].startMins >= slotMins && concerts[idx].startMins < slotMins + 30)
@@ -278,13 +271,11 @@ Object.keys(data).forEach(day => {
         return;
       }
 
-      // Advance the concert index for this stage
       concertIdx[stage]++;
 
       const duration = concert.endMins - concert.startMins;
       const rowspan = Math.max(1, Math.round(duration / 30));
 
-      // Mark this stage as occupied for the next (rowspan-1) slots
       occupiedUntil[stage] = slotIndex + rowspan;
 
       const td = document.createElement("td");
@@ -331,7 +322,7 @@ Object.keys(data).forEach(day => {
   container.appendChild(dayDiv);
 });
 
-// ── selected artists panel ────────────────────────────────────────────────
+// ── artistas selecionados ──────────────────────────────────────
 function hasConflict(currentEntry, allEntries) {
   const current = JSON.parse(currentEntry);
   const currentStart = timeToMinutes(current.start);
@@ -429,7 +420,7 @@ function updateSelectedArtists() {
         const conflict = hasConflict(entry, Array.from(selectedArtists[day]));
         if (conflict) item.classList.add("conflict");
 
-        // Encontrar os amigos que vão a este concerto
+        // amigos que vão a este concerto
         const attendingFriends = friendsData.filter(f => f.concerts.includes(parsed.artist));
         let friendsHTML = '';
         if (attendingFriends.length > 0) {
@@ -468,12 +459,12 @@ function updateSelectedArtists() {
     selectedContainer.appendChild(footer);
   }
 
-  // Atualizar a grelha principal (tabela em cima)
+  // update schedule grid
   document.querySelectorAll('td.selectable').forEach(td => {
     const artist = td.getAttribute('data-artist');
     const container = td.querySelector('.grid-friends-container');
     if (!container) return;
-    
+
     const attendingFriends = friendsData.filter(f => f.concerts.includes(artist));
     if (attendingFriends.length > 0) {
       let friendsHTML = '<div class="friends-avatars" style="margin-top: 6px; justify-content: center;">';
@@ -497,7 +488,7 @@ function saveSelectedArtists() {
   } catch (e) { }
 }
 
-// ── download ──────────────────────────────────────────────────────────────
+// ── exportar imagem ──────────────────────────────────────────────────────
 document.getElementById('download-image').addEventListener('click', async () => {
   const selectedArtistsDiv = document.querySelector('.selected-artists');
   const button = document.getElementById('download-image');
@@ -555,7 +546,7 @@ document.getElementById('download-image').addEventListener('click', async () => 
     let wrapperH = 960;
 
     if (contentHeight > 880) {
-      wrapperH = contentHeight + 80; // smaller top and bottom padding around the frame
+      wrapperH = contentHeight + 80; // margens ligeiramente mais pequenas no topo e fundo
       wrapperW = wrapperH * (9 / 16);
     }
 
@@ -594,7 +585,7 @@ document.getElementById('download-image').addEventListener('click', async () => 
   button.style.display = 'block';
 });
 
-// UI Helpers
+// opcoes user
 function showFlash(message) {
   const flash = document.getElementById('flash-message');
   flash.textContent = message;
@@ -602,7 +593,7 @@ function showFlash(message) {
   setTimeout(() => flash.classList.remove('show'), 3000);
 }
 
-// Create Group Modal Logic
+// criar o grupo
 document.getElementById('create-group').addEventListener('click', () => {
   document.getElementById('create-modal').style.display = 'flex';
   document.getElementById('create-name-input').focus();
@@ -626,7 +617,7 @@ document.getElementById('create-confirm').addEventListener('click', () => {
   }
 });
 
-// Join Group Modal Logic
+// entrar num grupo
 document.getElementById('join-group').addEventListener('click', () => {
   document.getElementById('join-modal').style.display = 'flex';
   document.getElementById('join-code-input').focus();
@@ -649,12 +640,12 @@ document.getElementById('join-confirm').addEventListener('click', async () => {
       showFlash("Error: " + err.message);
       return;
     }
-    
+
     currentGroupId = code;
     currentUserName = name;
     localStorage.setItem('currentGroupId', currentGroupId);
     localStorage.setItem('currentUserName', currentUserName);
-    
+
     document.getElementById('join-modal').style.display = 'none';
     setupGroupListener();
     updateGroupData();
@@ -662,7 +653,7 @@ document.getElementById('join-confirm').addEventListener('click', async () => {
   }
 });
 
-// Exit Group
+// sair de um grupo
 document.getElementById('leave-group').addEventListener('click', () => {
   if (confirm("Are you sure you want to exit the group?")) {
     if (groupUnsubscribe) {
@@ -680,7 +671,7 @@ document.getElementById('leave-group').addEventListener('click', () => {
   }
 });
 
-// clear schedule logic removed
+// lógica de limpar horário removida
 
 
 updateSelectedArtists();

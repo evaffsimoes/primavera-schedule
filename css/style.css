@@ -101,9 +101,7 @@ td.selected { position: relative; color: white; font-weight: 700; overflow: hidd
   color: white; cursor: pointer;
   background: linear-gradient(135deg, #f4a8c7, #ff5a4f);
   box-shadow: 0 10px 28px rgba(255,90,79,0.22);
-  transition: transform 0.2s ease, filter 0.2s ease;
 }
-.action-buttons button:hover { transform: translateY(-2px); filter: brightness(1.05); }
 #clear-friends {
   background: linear-gradient(135deg, #a0a0a0, #7a7a7a);
   box-shadow: 0 10px 28px rgba(0,0,0,0.15);
@@ -242,7 +240,7 @@ td.selected .concert-artist, td.selected .concert-time { color: white; }
   position: fixed; top: 2rem; left: 50%; transform: translateX(-50%) translateY(-150%);
   background: var(--card); border-radius: 1rem; padding: 1rem 2rem;
   box-shadow: 0 10px 40px rgba(0,0,0,0.15); backdrop-filter: blur(16px);
-  font-weight: 700; color: #111; z-index: 1000;
+  font-weight: 700; color: #111; z-index: 9999;
   transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 .flash-message.show { transform: translateX(-50%) translateY(0); }
@@ -270,11 +268,25 @@ td.selected .concert-artist, td.selected .concert-time { color: white; }
 .modal-actions { display: flex; gap: 1rem; justify-content: center; }
 .modal-actions button {
   padding: 0.7rem 1.5rem; border-radius: 999px; border: none; font-weight: 800; cursor: pointer; text-transform: uppercase; font-size: 0.8rem;
-  transition: transform 0.2s ease;
 }
-.modal-actions button:hover { transform: translateY(-2px); }
 .btn-cancel { background: #eef1f2; color: #555; }
 .btn-confirm { background: var(--selected); color: white; box-shadow: 0 5px 15px rgba(255,90,79,0.2); }
+
+.btn-clear-day {
+  margin-left: auto;
+  padding: 0.3rem 0.7rem;
+  font-size: 0.55rem;
+  border-radius: 999px;
+  border: 1px solid #ff5a4f;
+  background: #f3f3f3;
+  color: #ff5a4f;
+  cursor: pointer;
+  font-family: inherit;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  box-shadow: 0 4px 12px rgba(255,90,79,0.15);
+}
 
 @media (max-width: 900px) {
   html { font-size: 13px; }

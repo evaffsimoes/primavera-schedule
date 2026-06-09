@@ -1,5 +1,5 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getFirestore, doc, setDoc, updateDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { getFirestore, doc, setDoc, updateDoc, onSnapshot, getDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyAezxySTUQLY2hCKJvqn8q_kz2anI50D-U",
@@ -189,7 +189,26 @@ Object.keys(data).forEach(day => {
   const dayDiv = document.createElement("div");
   dayDiv.className = "day-container";
   const titleEl = document.createElement("h2");
-  titleEl.textContent = day;
+  titleEl.style.display = "flex";
+  titleEl.style.justifyContent = "space-between";
+  titleEl.style.alignItems = "center";
+  titleEl.innerHTML = `<span>${day}</span> <button class="btn-clear-day" title="Clear this day">Clear Day</button>`;
+  
+  const clearBtn = titleEl.querySelector('.btn-clear-day');
+  clearBtn.addEventListener('click', () => {
+    selectedArtists[day].clear();
+    
+    const dayTable = dayDiv.querySelector('table');
+    if (dayTable) {
+      dayTable.querySelectorAll('.selectable.selected').forEach(td => td.classList.remove('selected'));
+    }
+    
+    updateSelectedArtists();
+    saveSelectedArtists();
+    updateGroupData();
+    showFlash(`Schedule cleared for ${day}!`);
+  });
+
   dayDiv.appendChild(titleEl);
 
   const table = document.createElement("table");
@@ -271,10 +290,12 @@ Object.keys(data).forEach(day => {
       const td = document.createElement("td");
       td.rowSpan = rowspan;
       td.classList.add("selectable");
+      td.setAttribute("data-artist", concert.artist);
       td.innerHTML = `
         <div class="concert-card">
           <div class="concert-artist">${concert.artist}</div>
           <div class="concert-time">${concert.start} → ${concert.end}</div>
+          <div class="grid-friends-container"></div>
         </div>`;
 
       const entry = JSON.stringify({
@@ -446,6 +467,26 @@ function updateSelectedArtists() {
     footer.className = "selected-footer";
     selectedContainer.appendChild(footer);
   }
+
+  // Atualizar a grelha principal (tabela em cima)
+  document.querySelectorAll('td.selectable').forEach(td => {
+    const artist = td.getAttribute('data-artist');
+    const container = td.querySelector('.grid-friends-container');
+    if (!container) return;
+    
+    const attendingFriends = friendsData.filter(f => f.concerts.includes(artist));
+    if (attendingFriends.length > 0) {
+      let friendsHTML = '<div class="friends-avatars" style="margin-top: 6px; justify-content: center;">';
+      attendingFriends.forEach(f => {
+        const initial = f.name.charAt(0).toUpperCase();
+        friendsHTML += `<div class="friend-avatar" style="background-color: ${f.color}; width: 16px; height: 16px; font-size: 0.55rem; border: 1px solid rgba(0,0,0,0.1);" title="${f.name}">${initial}</div>`;
+      });
+      friendsHTML += '</div>';
+      container.innerHTML = friendsHTML;
+    } else {
+      container.innerHTML = '';
+    }
+  });
 }
 
 function saveSelectedArtists() {
@@ -593,15 +634,27 @@ document.getElementById('join-group').addEventListener('click', () => {
 document.getElementById('join-cancel').addEventListener('click', () => {
   document.getElementById('join-modal').style.display = 'none';
 });
-document.getElementById('join-confirm').addEventListener('click', () => {
+document.getElementById('join-confirm').addEventListener('click', async () => {
   const code = document.getElementById('join-code-input').value.trim().toUpperCase();
   const name = document.getElementById('join-name-input').value.trim();
   if (code && name) {
+    try {
+      const groupRef = doc(db, "groups", code);
+      const docSnap = await getDoc(groupRef);
+      if (!docSnap.exists()) {
+        showFlash("Group not found!");
+        return;
+      }
+    } catch (err) {
+      showFlash("Error: " + err.message);
+      return;
+    }
+    
     currentGroupId = code;
     currentUserName = name;
     localStorage.setItem('currentGroupId', currentGroupId);
     localStorage.setItem('currentUserName', currentUserName);
-
+    
     document.getElementById('join-modal').style.display = 'none';
     setupGroupListener();
     updateGroupData();
@@ -627,24 +680,7 @@ document.getElementById('leave-group').addEventListener('click', () => {
   }
 });
 
-// Clear Schedule
-document.getElementById('clear-schedule').addEventListener('click', () => {
-  if (confirm("Are you sure you want to clear your entire schedule?")) {
-    // Clear the Set for each day
-    Object.keys(selectedArtists).forEach(day => {
-      selectedArtists[day].clear();
-    });
+// clear schedule logic removed
 
-    // Remove .selected class from all table cells
-    document.querySelectorAll('.selectable.selected').forEach(td => {
-      td.classList.remove('selected');
-    });
-
-    updateSelectedArtists();
-    saveSelectedArtists();
-    updateGroupData();
-    showFlash("Horário limpo!");
-  }
-});
 
 updateSelectedArtists();

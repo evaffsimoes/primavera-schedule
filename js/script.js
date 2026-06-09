@@ -1,5 +1,5 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getFirestore, doc, setDoc, updateDoc, onSnapshot, getDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { getFirestore, doc, setDoc, updateDoc, onSnapshot, getDoc, deleteField } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyAezxySTUQLY2hCKJvqn8q_kz2anI50D-U",
@@ -655,20 +655,44 @@ document.getElementById('join-confirm').addEventListener('click', async () => {
 
 // sair de um grupo
 document.getElementById('leave-group').addEventListener('click', () => {
-  if (confirm("Are you sure you want to exit the group?")) {
-    if (groupUnsubscribe) {
-      groupUnsubscribe();
-      groupUnsubscribe = null;
+  document.getElementById('leave-modal').style.display = 'flex';
+});
+
+document.getElementById('leave-cancel').addEventListener('click', () => {
+  document.getElementById('leave-modal').style.display = 'none';
+});
+
+document.getElementById('leave-confirm').addEventListener('click', async () => {
+  document.getElementById('leave-modal').style.display = 'none';
+  if (currentGroupId && currentUserName) {
+    const groupRef = doc(db, "groups", currentGroupId);
+    try {
+      await updateDoc(groupRef, {
+        [`members.${currentUserName}`]: deleteField()
+      });
+    } catch (err) {
+      console.error("Error removing member:", err);
     }
-    currentGroupId = null;
-    currentUserName = null;
-    localStorage.removeItem('currentGroupId');
-    localStorage.removeItem('currentUserName');
-    friendsData = [];
-    setupGroupListener();
-    updateSelectedArtists();
-    showFlash("You left the group.");
   }
+
+  if (groupUnsubscribe) {
+    groupUnsubscribe();
+    groupUnsubscribe = null;
+  }
+  
+  currentGroupId = null;
+  currentUserName = null;
+  localStorage.removeItem('currentGroupId');
+  localStorage.removeItem('currentUserName');
+  
+  friendsData = [];
+  updateSelectedArtists(); // trigger redraw to remove avatars
+  
+  document.getElementById('active-group-info').style.display = 'none';
+  document.getElementById('leave-group').style.display = 'none';
+  document.getElementById('create-group').style.display = '';
+  document.getElementById('join-group').style.display = '';
+  showFlash("You left the group.");
 });
 
 // lógica de limpar horário removida

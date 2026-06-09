@@ -1,3 +1,18 @@
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getFirestore, doc, setDoc, updateDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyAezxySTUQLY2hCKJvqn8q_kz2anI50D-U",
+  authDomain: "primavera-schedule.firebaseapp.com",
+  projectId: "primavera-schedule",
+  storageBucket: "primavera-schedule.firebasestorage.app",
+  messagingSenderId: "1081905859375",
+  appId: "1:1081905859375:web:e68600892e39174ba9efda"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
 // ── helpers ──────────────────────────────────────────────────────────────
 function timeToMinutes(timeStr) {
   const [hh, mm] = timeStr.split(':').map(Number);
@@ -14,7 +29,7 @@ function minsToLabel(totalMins) {
 
 // ── data ─────────────────────────────────────────────────────────────────
 const data = {
-  "11 de junho": [
+  "11 july": [
     ["16:35", "17:25", "Primavera", "Vaiapraia"],
     ["16:45", "17:35", "Estrella", "emmy Curl"],
     ["17:40", "18:30", "Vodafone", "Inês Marques Lucas"],
@@ -33,7 +48,7 @@ const data = {
     ["01:25", "02:25", "ZYN", "Gelli Haha"],
     ["02:40", "03:40", "Primavera", "Ninajirachi"]
   ],
-  "12 de junho": [
+  "12 july": [
     ["16:35", "17:25", "Primavera", "Bestia Bebé"],
     ["16:45", "17:35", "Estrella", "Rita Vian"],
     ["17:40", "18:30", "Vodafone", "Buscabulla"],
@@ -52,7 +67,7 @@ const data = {
     ["00:50", "01:50", "ZYN", "Melt-Banana"],
     ["02:05", "03:05", "Primavera", "Joey Valence & Brae"]
   ],
-  "13 de junho": [
+  "13 july": [
     ["16:35", "17:25", "Primavera", "Aiko el grupo"],
     ["16:45", "17:35", "Estrella", "NAPA"],
     ["17:40", "18:35", "ZYN", "The Sophs"],
@@ -70,7 +85,7 @@ const data = {
     ["01:00", "02:00", "ZYN", "fakemink"],
     ["02:15", "03:15", "Primavera", "Model/Actriz"]
   ],
-  "14 de junho": [
+  "14 july": [
     ["15:00", "17:00", "ZYN", "SuM"],
     ["17:00", "19:00", "ZYN", "Xinobi"],
     ["19:00", "21:00", "ZYN", "Dixon"],
@@ -85,40 +100,78 @@ const selectedContainer = document.getElementById("selected-artists-list");
 
 const friendColors = ['#ff5a4f', '#ee6aa7', '#feb400', '#b0cf0d', '#089e5f', '#f4a8c7'];
 let friendsData = [];
-try {
-  const savedFriends = localStorage.getItem('friendsData');
-  if (savedFriends) {
-    friendsData = JSON.parse(savedFriends);
+let currentGroupId = localStorage.getItem('currentGroupId') || null;
+let currentUserName = localStorage.getItem('currentUserName') || null;
+let groupUnsubscribe = null;
+
+function setupGroupListener() {
+  if (!currentGroupId || !currentUserName) {
+    document.getElementById('active-group-info').style.display = 'none';
+    document.getElementById('leave-group').style.display = 'none';
+    document.getElementById('create-group').style.display = '';
+    document.getElementById('join-group').style.display = '';
+    return;
   }
-} catch (e) { }
 
-// Logic to import friends from URL
-const urlParams = new URLSearchParams(window.location.search);
-const importData = urlParams.get('import');
-if (importData) {
-  try {
-    const decoded = atob(importData);
-    const friendInfo = JSON.parse(decoded);
-    if (friendInfo && friendInfo.name && friendInfo.concerts) {
-      // Pick a color
-      const color = friendColors[friendsData.length % friendColors.length];
-      friendInfo.color = color;
+  document.getElementById('active-group-info').style.display = 'block';
+  document.getElementById('group-code-display').textContent = currentGroupId;
+  document.getElementById('leave-group').style.display = '';
+  document.getElementById('create-group').style.display = 'none';
+  document.getElementById('join-group').style.display = 'none';
 
-      // Check if friend already exists to prevent duplicates
-      friendsData = friendsData.filter(f => f.name !== friendInfo.name);
-      friendsData.push(friendInfo);
+  if (groupUnsubscribe) groupUnsubscribe();
 
-      localStorage.setItem('friendsData', JSON.stringify(friendsData));
+  const groupRef = doc(db, "groups", currentGroupId);
+  groupUnsubscribe = onSnapshot(groupRef, (docSnap) => {
+    if (docSnap.exists()) {
+      const data = docSnap.data();
+      const members = data.members || {};
+      friendsData = [];
+
+      const memberNames = Object.keys(members).sort();
+      memberNames.forEach((name, colorIdx) => {
+        const info = members[name];
+        friendsData.push({
+          name: name,
+          color: friendColors[colorIdx % friendColors.length],
+          concerts: info.concerts || []
+        });
+      });
+      updateSelectedArtists();
     }
-
-    // Clean URL
-    const url = new URL(window.location);
-    url.searchParams.delete('import');
-    window.history.replaceState({}, '', url);
-  } catch (e) {
-    console.error("Erro ao importar amigo", e);
-  }
+  }, (error) => {
+    showFlash("Database Error: " + error.message);
+    console.error("Firebase Snapshot Error:", error);
+  });
 }
+
+function updateGroupData() {
+  if (!currentGroupId || !currentUserName) return;
+  const userConcerts = [];
+  Object.keys(selectedArtists).forEach(day => {
+    selectedArtists[day].forEach(entry => {
+      const parsed = JSON.parse(entry);
+      userConcerts.push(parsed.artist);
+    });
+  });
+
+  const groupRef = doc(db, "groups", currentGroupId);
+  updateDoc(groupRef, {
+    [`members.${currentUserName}`]: { concerts: userConcerts }
+  }).catch(err => {
+    // Se o documento não existir ainda
+    setDoc(groupRef, {
+      members: {
+        [currentUserName]: { concerts: userConcerts }
+      }
+    }, { merge: true }).catch(err2 => {
+      showFlash("Save Error: " + err2.message);
+      console.error("Firebase Set Error:", err2);
+    });
+  });
+}
+
+setupGroupListener();
 
 // Load saved selection
 try {
@@ -141,7 +194,7 @@ Object.keys(data).forEach(day => {
 
   const table = document.createElement("table");
   const thead = document.createElement("thead");
-  thead.innerHTML = `<tr><th>Hora</th>${stages.map(s => `<th>${s}</th>`).join("")}</tr>`;
+  thead.innerHTML = `<tr><th>Time</th>${stages.map(s => `<th>${s}</th>`).join("")}</tr>`;
   table.appendChild(thead);
 
   // Build a lookup: concertsByStage[stage] = sorted list of concerts
@@ -243,6 +296,7 @@ Object.keys(data).forEach(day => {
         }
         updateSelectedArtists();
         saveSelectedArtists();
+        updateGroupData();
       });
 
       tr.appendChild(td);
@@ -335,7 +389,7 @@ function updateSelectedArtists() {
 
       const numC = parsedEntries.length;
       summaryDiv.innerHTML = `
-        <div class="day-summary-text">${startLabel} &rarr; ${endLabel} &bull; ${numC} concerto${numC > 1 ? 's' : ''}</div>
+        <div class="day-summary-text">${startLabel} &rarr; ${endLabel} &bull; ${numC} gig${numC > 1 ? 's' : ''}</div>
         <div class="day-summary-bar">${segmentsHTML}</div>
         <div class="day-summary-labels">${labelsHTML}</div>
       `;
@@ -507,65 +561,89 @@ function showFlash(message) {
   setTimeout(() => flash.classList.remove('show'), 3000);
 }
 
-function askName(callback) {
-  const modal = document.getElementById('name-modal');
-  const input = document.getElementById('name-input');
-  const cancel = document.getElementById('name-cancel');
-  const confirm = document.getElementById('name-confirm');
-  
-  modal.style.display = 'flex';
-  input.value = '';
-  input.focus();
-  
-  const close = () => { modal.style.display = 'none'; };
-  
-  cancel.onclick = close;
-  confirm.onclick = () => {
-    if(input.value.trim()) {
-      close();
-      callback(input.value.trim());
-    }
-  };
-}
+// Create Group Modal Logic
+document.getElementById('create-group').addEventListener('click', () => {
+  document.getElementById('create-modal').style.display = 'flex';
+  document.getElementById('create-name-input').focus();
+});
+document.getElementById('create-cancel').addEventListener('click', () => {
+  document.getElementById('create-modal').style.display = 'none';
+});
+document.getElementById('create-confirm').addEventListener('click', () => {
+  const name = document.getElementById('create-name-input').value.trim();
+  if (name) {
+    const groupId = Math.random().toString(36).substring(2, 6).toUpperCase();
+    currentGroupId = groupId;
+    currentUserName = name;
+    localStorage.setItem('currentGroupId', currentGroupId);
+    localStorage.setItem('currentUserName', currentUserName);
 
-document.getElementById('share-schedule').addEventListener('click', () => {
-  const userConcerts = [];
-  Object.keys(selectedArtists).forEach(day => {
-    selectedArtists[day].forEach(entry => {
-      const parsed = JSON.parse(entry);
-      userConcerts.push(parsed.artist);
-    });
-  });
-
-  if (userConcerts.length === 0) {
-    showFlash("Select at least one concert");
-    return;
+    document.getElementById('create-modal').style.display = 'none';
+    setupGroupListener();
+    updateGroupData();
+    showFlash(`Group created! Code: ${groupId}`);
   }
-
-  askName((name) => {
-    const payload = { name: name, concerts: userConcerts };
-    const encoded = btoa(unescape(encodeURIComponent(JSON.stringify(payload))));
-    const url = new URL(window.location);
-    url.searchParams.set('import', encoded);
-
-    navigator.clipboard.writeText(url.toString()).then(() => {
-      showFlash("Link copied! Send it to your friends.");
-    }).catch(err => {
-      showFlash("Error copying link.");
-    });
-  });
 });
 
-const clearFriendsBtn = document.getElementById('clear-friends');
-if (friendsData.length > 0) {
-  clearFriendsBtn.style.display = 'block';
-}
-clearFriendsBtn.addEventListener('click', () => {
-  if (confirm("Are you sure you want to remove all imported friends?")) {
+// Join Group Modal Logic
+document.getElementById('join-group').addEventListener('click', () => {
+  document.getElementById('join-modal').style.display = 'flex';
+  document.getElementById('join-code-input').focus();
+});
+document.getElementById('join-cancel').addEventListener('click', () => {
+  document.getElementById('join-modal').style.display = 'none';
+});
+document.getElementById('join-confirm').addEventListener('click', () => {
+  const code = document.getElementById('join-code-input').value.trim().toUpperCase();
+  const name = document.getElementById('join-name-input').value.trim();
+  if (code && name) {
+    currentGroupId = code;
+    currentUserName = name;
+    localStorage.setItem('currentGroupId', currentGroupId);
+    localStorage.setItem('currentUserName', currentUserName);
+
+    document.getElementById('join-modal').style.display = 'none';
+    setupGroupListener();
+    updateGroupData();
+    showFlash(`Joined group: ${code}`);
+  }
+});
+
+// Exit Group
+document.getElementById('leave-group').addEventListener('click', () => {
+  if (confirm("Are you sure you want to exit the group?")) {
+    if (groupUnsubscribe) {
+      groupUnsubscribe();
+      groupUnsubscribe = null;
+    }
+    currentGroupId = null;
+    currentUserName = null;
+    localStorage.removeItem('currentGroupId');
+    localStorage.removeItem('currentUserName');
     friendsData = [];
-    localStorage.removeItem('friendsData');
-    clearFriendsBtn.style.display = 'none';
+    setupGroupListener();
     updateSelectedArtists();
+    showFlash("You left the group.");
+  }
+});
+
+// Clear Schedule
+document.getElementById('clear-schedule').addEventListener('click', () => {
+  if (confirm("Are you sure you want to clear your entire schedule?")) {
+    // Clear the Set for each day
+    Object.keys(selectedArtists).forEach(day => {
+      selectedArtists[day].clear();
+    });
+
+    // Remove .selected class from all table cells
+    document.querySelectorAll('.selectable.selected').forEach(td => {
+      td.classList.remove('selected');
+    });
+
+    updateSelectedArtists();
+    saveSelectedArtists();
+    updateGroupData();
+    showFlash("Horário limpo!");
   }
 });
 

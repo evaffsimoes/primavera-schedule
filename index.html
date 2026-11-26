@@ -9,7 +9,7 @@
   <meta charset="UTF-8" />
   <title>Festival Schedule</title>
   <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no" />
-  <link rel="stylesheet" href="./css/style.css?v=17">
+  <link rel="stylesheet" href="./css/style.css?v=19">
 </head>
 
 <body>
@@ -26,7 +26,12 @@
         <span>Porto</span>
       </div>
     </div>
-    <nav class="festival-picker" id="festival-selector" aria-label="Escolher festival" hidden></nav>
+    <nav class="festival-picker" id="festival-selector" aria-label="Escolher festival" hidden>
+      <button class="festival-picker-toggle" id="festival-picker-toggle" type="button" aria-label="Escolher festival" aria-expanded="false" aria-controls="festival-options">
+        <span aria-hidden="true">›</span>
+      </button>
+      <div class="festival-options" id="festival-options" hidden></div>
+    </nav>
     <div id="schedule"></div>
     <div class="selected-artists" id="selected-artists">
       <div class="selected-header">

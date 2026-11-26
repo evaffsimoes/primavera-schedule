@@ -18,6 +18,8 @@ function minsToLabel(totalMins) {
 
 // Festival, palco e concertos estão definidos em festival-data.js.
 const festivalSelector = document.getElementById("festival-selector");
+const festivalPickerToggle = document.getElementById("festival-picker-toggle");
+const festivalOptions = document.getElementById("festival-options");
 const festivalIds = Object.keys(festivals);
 const requestedFestivalId = new URLSearchParams(window.location.search).get("festival");
 const activeFestivalId = festivals[requestedFestivalId] ? requestedFestivalId : festivalIds[0];
@@ -38,6 +40,30 @@ const container = document.getElementById("schedule");
 const selectedContainer = document.getElementById("selected-artists-list");
 
 festivalSelector.hidden = festivalIds.length < 2;
+function closeFestivalPicker(returnFocus = false) {
+  festivalOptions.hidden = true;
+  festivalPickerToggle.setAttribute("aria-expanded", "false");
+  festivalPickerToggle.setAttribute("aria-label", "Escolher festival");
+  if (returnFocus) festivalPickerToggle.focus();
+}
+
+festivalPickerToggle.addEventListener("click", () => {
+  const isExpanded = festivalPickerToggle.getAttribute("aria-expanded") === "true";
+  festivalOptions.hidden = isExpanded;
+  festivalPickerToggle.setAttribute("aria-expanded", String(!isExpanded));
+  festivalPickerToggle.setAttribute("aria-label", isExpanded ? "Escolher festival" : "Fechar opções de festival");
+});
+
+document.addEventListener("click", event => {
+  if (!festivalSelector.contains(event.target)) closeFestivalPicker();
+});
+
+document.addEventListener("keydown", event => {
+  if (event.key === "Escape" && festivalPickerToggle.getAttribute("aria-expanded") === "true") {
+    closeFestivalPicker(true);
+  }
+});
+
 festivalIds.forEach(id => {
   const festivalLink = document.createElement("a");
   const festivalUrl = new URL(window.location.href);
@@ -49,7 +75,7 @@ festivalIds.forEach(id => {
     festivalLink.classList.add("active");
     festivalLink.setAttribute("aria-current", "page");
   }
-  festivalSelector.appendChild(festivalLink);
+  festivalOptions.appendChild(festivalLink);
 });
 const hero = document.querySelector(".hero");
 const heroLogo = document.querySelector(".hero-logo");

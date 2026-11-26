@@ -4,13 +4,16 @@
   --text: #1b1b1b;
   --muted: rgba(0,0,0,0.55);
   --border: rgba(0,0,0,0.08);
-  --pink-light: #f4a8c7;
-  --pink: #ee6aa7;
-  --pink-strong: #ff4f8b;
-  --coral: #ff5a4f;
+  --festival-primary: #ff5a4f;
+  --festival-secondary: #f4a8c7;
+  --festival-highlight: #ff4f8b;
+  --pink-light: var(--festival-secondary);
+  --pink: var(--festival-primary);
+  --pink-strong: var(--festival-highlight);
+  --coral: var(--festival-primary);
   --red: #ff3b30;
-  --hover: rgba(255,90,79,0.08);
-  --selected: linear-gradient(135deg, #f4a8c7 0%, #ff5a4f 100%);
+  --hover: color-mix(in srgb, var(--festival-primary) 8%, transparent);
+  --selected: linear-gradient(135deg, var(--festival-secondary) 0%, var(--festival-primary) 100%);
 }
 html { font-size: 16px; box-sizing: border-box; }
 *, *:before, *:after { box-sizing: inherit; }
@@ -30,7 +33,7 @@ body {
   display: flex; align-items: center; justify-content: center; gap: 1.25rem;
   margin-top: 1rem; margin-bottom: 1.5rem;
 }
-.hero-logo { width: 84px; height: 84px; object-fit: contain; filter: drop-shadow(0 6px 20px rgba(255,90,79,0.15)); }
+.hero-logo { width: 84px; height: 84px; object-fit: contain; filter: drop-shadow(0 6px 20px color-mix(in srgb, var(--festival-primary) 15%, transparent)); }
 .hero-text { display: flex; flex-direction: column; line-height: 0.9; }
 .hero-text span:first-child {
   font-family: "Cormorant Garamond", serif;
@@ -56,10 +59,10 @@ body {
 .festival-option:hover { transform: translateY(-1px); color: var(--coral); }
 .festival-option.active {
   border-color: transparent; background: var(--selected); color: white;
-  box-shadow: 0 8px 20px rgba(255,90,79,0.2);
+  box-shadow: 0 8px 20px color-mix(in srgb, var(--festival-primary) 20%, transparent);
 }
 .festival-option:focus-visible {
-  outline: 3px solid rgba(255,90,79,0.35); outline-offset: 3px;
+  outline: 3px solid color-mix(in srgb, var(--festival-primary) 35%, transparent); outline-offset: 3px;
 }
 .day-container { margin-bottom: 3rem; padding: 0 2rem; }
 .day-container > h2 { font-size: 1.1rem; font-weight: 900; text-transform: uppercase; margin-bottom: 1rem; letter-spacing: -0.04em; }
@@ -73,7 +76,7 @@ table {
   border-radius: 0.4rem;
   table-layout: fixed;
 }
-thead { background: linear-gradient(90deg, rgba(244,168,199,0.18), rgba(255,90,79,0.12)); }
+thead { background: linear-gradient(90deg, color-mix(in srgb, var(--festival-secondary) 18%, transparent), color-mix(in srgb, var(--festival-primary) 12%, transparent)); }
 th {
   color: var(--text); font-weight: 800; text-transform: uppercase;
   letter-spacing: 0.04em; padding: 1.15rem 0.75rem; text-align: center; font-size: 0.95rem;
@@ -105,7 +108,7 @@ td.selected { position: relative; color: white; font-weight: 700; overflow: hidd
 
 .selected-header { display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin-bottom: 1.25rem; }
 .selected-title-group { display: flex; flex-direction: column; gap: 0.35rem; }
-.selected-kicker { font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.18em; font-weight: 700; color: #ff5a4f; }
+.selected-kicker { font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.18em; font-weight: 700; color: var(--festival-primary); }
 .selected-artists h2 {
   margin: 0; font-family: "Cormorant Garamond", serif;
   font-size: clamp(2.2rem, 5vw, 3.5rem); font-weight: 500; line-height: 0.9; letter-spacing: -0.05em;
@@ -118,8 +121,8 @@ td.selected { position: relative; color: white; font-weight: 700; overflow: hidd
   border: none; padding: 0.9rem 2rem; border-radius: 999px;
   font-size: 0.85rem; font-weight: 800; letter-spacing: 0.05em; text-transform: uppercase;
   color: white; cursor: pointer;
-  background: linear-gradient(135deg, #f4a8c7, #ff5a4f);
-  box-shadow: 0 10px 28px rgba(255,90,79,0.22);
+  background: var(--selected);
+  box-shadow: 0 10px 28px color-mix(in srgb, var(--festival-primary) 22%, transparent);
 }
 #clear-friends {
   background: linear-gradient(135deg, #a0a0a0, #7a7a7a);
@@ -132,8 +135,8 @@ td.selected { position: relative; color: white; font-weight: 700; overflow: hidd
 .selected-artists ul { display: flex; flex-direction: column; gap: 0.75rem; list-style: none; padding: 0; margin: 0; }
 .selected-artists li {
   padding: 1rem 1.1rem; border-radius: 1.2rem;
-  background: linear-gradient(135deg, rgba(244,168,199,0.12), rgba(255,90,79,0.08));
-  border: 1px solid rgba(255,90,79,0.08); font-size: 0.95rem; font-weight: 600; color: #1b1b1b;
+  background: linear-gradient(135deg, color-mix(in srgb, var(--festival-secondary) 12%, transparent), color-mix(in srgb, var(--festival-primary) 8%, transparent));
+  border: 1px solid color-mix(in srgb, var(--festival-primary) 8%, transparent); font-size: 0.95rem; font-weight: 600; color: #1b1b1b;
   box-shadow: 0 6px 20px rgba(0,0,0,0.03);
 }
 .selected-day-section { margin-bottom: 3rem; }
@@ -143,7 +146,7 @@ td.selected { position: relative; color: white; font-weight: 700; overflow: hidd
 }
 .day-divider {
   width: 100%; height: 1px; margin-bottom: 1.5rem;
-  background: linear-gradient(90deg, #ff4f8b 0%, rgba(255,79,139,0) 100%);
+  background: linear-gradient(90deg, var(--festival-highlight) 0%, color-mix(in srgb, var(--festival-highlight) 0%, transparent) 100%);
 }
 .day-summary {
   display: flex; flex-direction: column; gap: 0.6rem; margin-bottom: 2rem; padding: 0 0.5rem;
@@ -226,8 +229,8 @@ td.selected { position: relative; color: white; font-weight: 700; overflow: hidd
   display: flex; flex-direction: column; align-items: flex-start; justify-content: center;
   gap: 0.45rem; padding: 0.9rem 0.85rem; height: 100%; min-height: 100%;
   border-radius: 1.2rem;
-  background: linear-gradient(135deg, rgba(244,168,199,0.18), rgba(255,90,79,0.14));
-  border: 1px solid rgba(255,90,79,0.08);
+  background: linear-gradient(135deg, color-mix(in srgb, var(--festival-secondary) 18%, transparent), color-mix(in srgb, var(--festival-primary) 14%, transparent));
+  border: 1px solid color-mix(in srgb, var(--festival-primary) 8%, transparent);
   box-shadow: 0 6px 18px rgba(0,0,0,0.04);
   text-align: left;
   transition: transform 0.18s ease, filter 0.18s ease;
@@ -248,8 +251,8 @@ td.selectable:hover .concert-card { transform: translateY(-2px); filter: brightn
 .unscheduled-artist.selected .concert-time { color: white; }
 .schedule-item.unscheduled { border: 1px solid var(--border); border-radius: 0.8rem; padding-top: 0.8rem; padding-bottom: 0.8rem; }
 td.selected .concert-card {
-  background: linear-gradient(135deg, #f4a8c7, #ff5a4f);
-  border: none; box-shadow: 0 10px 24px rgba(255,90,79,0.25);
+  background: var(--selected);
+  border: none; box-shadow: 0 10px 24px color-mix(in srgb, var(--festival-primary) 25%, transparent);
 }
 td.selected .concert-artist, td.selected .concert-time { color: white; }
 
@@ -301,22 +304,22 @@ td.selected .concert-artist, td.selected .concert-time { color: white; }
   padding: 0.7rem 1.5rem; border-radius: 999px; border: none; font-weight: 800; cursor: pointer; text-transform: uppercase; font-size: 0.8rem;
 }
 .btn-cancel { background: #eef1f2; color: #555; }
-.btn-confirm { background: var(--selected); color: white; box-shadow: 0 5px 15px rgba(255,90,79,0.2); }
+.btn-confirm { background: var(--selected); color: white; box-shadow: 0 5px 15px color-mix(in srgb, var(--festival-primary) 20%, transparent); }
 
 .btn-clear-day {
   margin-left: auto;
   padding: 0.3rem 0.7rem;
   font-size: 0.55rem;
   border-radius: 999px;
-  border: 1px solid #ff5a4f;
+  border: 1px solid var(--festival-primary);
   background: #f3f3f3;
-  color: #ff5a4f;
+  color: var(--festival-primary);
   cursor: pointer;
   font-family: inherit;
   font-weight: 800;
   letter-spacing: 0.05em;
   text-transform: uppercase;
-  box-shadow: 0 4px 12px rgba(255,90,79,0.15);
+  box-shadow: 0 4px 12px color-mix(in srgb, var(--festival-primary) 15%, transparent);
 }
 
 @media (max-width: 900px) {

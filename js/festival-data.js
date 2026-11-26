@@ -3,6 +3,11 @@ export const festivals = {
     name: "Primavera Sound",
     location: "Porto",
     logo: "./assets/primalogo.png",
+    theme: {
+      primary: "#ff5a4f",
+      secondary: "#f4a8c7",
+      highlight: "#ff4f8b"
+    },
     stages: ["Estrella", "Vodafone", "ZYN", "Primavera"],
     days: {
       "11 july": [

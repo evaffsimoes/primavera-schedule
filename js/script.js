@@ -28,13 +28,19 @@ const selectedArtists = {};
 const container = document.getElementById("schedule");
 const selectedContainer = document.getElementById("selected-artists-list");
 
-festivalSelector.innerHTML = festivalIds.map(id =>
-  `<option value="${id}">${festivals[id].name} — ${festivals[id].location}</option>`
-).join("");
-festivalSelector.value = activeFestivalId;
-festivalSelector.addEventListener("change", () => {
-  localStorage.setItem("activeFestivalId", festivalSelector.value);
-  window.location.reload();
+festivalSelector.hidden = festivalIds.length < 2;
+festivalIds.forEach(id => {
+  const festivalButton = document.createElement("button");
+  festivalButton.type = "button";
+  festivalButton.className = "festival-option";
+  festivalButton.textContent = `${festivals[id].name} — ${festivals[id].location}`;
+  festivalButton.setAttribute("aria-pressed", String(id === activeFestivalId));
+  if (id === activeFestivalId) festivalButton.classList.add("active");
+  festivalButton.addEventListener("click", () => {
+    localStorage.setItem("activeFestivalId", id);
+    window.location.reload();
+  });
+  festivalSelector.appendChild(festivalButton);
 });
 document.querySelector(".hero-text span:first-child").textContent = festival.name;
 document.querySelector(".hero-text span:last-child").textContent = festival.location;

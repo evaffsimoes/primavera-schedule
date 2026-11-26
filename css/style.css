@@ -43,14 +43,23 @@ body {
   font-weight: 500; text-transform: uppercase; letter-spacing: 0.08em; color: rgba(0,0,0,0.55);
 }
 .festival-picker {
-  display: flex; align-items: center; justify-content: center; gap: 0.75rem;
-  margin: 0 auto 2rem; color: var(--muted); font-size: 0.8rem; font-weight: 800;
-  letter-spacing: 0.08em; text-transform: uppercase;
+  display: flex; align-items: center; justify-content: center; gap: 0.65rem;
+  margin: 0 auto 2rem; overflow-x: auto; padding: 0.25rem 0.5rem;
 }
-.festival-picker select {
-  max-width: min(100%, 22rem); padding: 0.65rem 2.2rem 0.65rem 1rem;
-  border: 1px solid var(--border); border-radius: 999px; background: white;
-  color: var(--text); font: inherit; letter-spacing: normal; text-transform: none;
+.festival-picker[hidden] { display: none; }
+.festival-option {
+  flex: 0 0 auto; padding: 0.7rem 1.2rem; border: 1px solid var(--border);
+  border-radius: 999px; background: rgba(255,255,255,0.72); color: var(--muted);
+  font: inherit; font-size: 0.8rem; font-weight: 800; cursor: pointer;
+  transition: color 0.2s ease, background 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+}
+.festival-option:hover { transform: translateY(-1px); color: var(--coral); }
+.festival-option.active {
+  border-color: transparent; background: var(--selected); color: white;
+  box-shadow: 0 8px 20px rgba(255,90,79,0.2);
+}
+.festival-option:focus-visible {
+  outline: 3px solid rgba(255,90,79,0.35); outline-offset: 3px;
 }
 .day-container { margin-bottom: 3rem; padding: 0 2rem; }
 .day-container > h2 { font-size: 1.1rem; font-weight: 900; text-transform: uppercase; margin-bottom: 1rem; letter-spacing: -0.04em; }
@@ -329,8 +338,7 @@ td.selected .concert-artist, td.selected .concert-time { color: white; }
   .hero-logo { width: 48px; height: 48px; }
   .hero-text span:first-child { font-size: 2.3rem; }
   .hero-text span:last-child { font-size: 0.7rem; }
-  .festival-picker { flex-direction: column; gap: 0.4rem; margin-bottom: 1.25rem; }
-  .festival-picker select { width: 100%; max-width: 22rem; }
+  .festival-picker { justify-content: flex-start; margin-bottom: 1.25rem; }
   .selected-artists { margin: 1rem; padding: 1rem; border-radius: 1.2rem; }
   .selected-header { flex-direction: column; align-items: stretch; }
   .selected-artists h2 { font-size: 2rem; }

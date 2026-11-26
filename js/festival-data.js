@@ -79,8 +79,8 @@ export const festivals = {
     name: "Primavera Sound",
     location: "Porto 2027",
     branding: {
-      wordmark: ["primavera", "sound"],
-      title: "Porto",
+      wordmark: ["primavera", "sound", "porto"],
+      title: "parque da cidade*porto",
       subtitle: "10–13 jun 2027"
     },
     theme: {

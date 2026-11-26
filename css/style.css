@@ -57,15 +57,28 @@ body {
   font-size: clamp(1rem, 2vw, 1.6rem);
   font-weight: 500; text-transform: uppercase; letter-spacing: 0.08em; color: rgba(0,0,0,0.55);
 }
-.hero-wordmark-layout { flex-direction: column; gap: 0.7rem; }
-.hero-wordmark-layout .hero-wordmark { align-items: center; }
-.hero-wordmark-layout .hero-text { align-items: center; gap: 0.2rem; line-height: 1; }
-.hero-wordmark-layout .hero-text span:first-child {
-  font-family: var(--festival-title-font); font-size: clamp(1.25rem, 3vw, 2rem);
-  font-weight: 900; letter-spacing: 0.14em; line-height: 1; text-transform: uppercase;
+.hero-wordmark-layout { flex-direction: column; gap: 0.25rem; width: 100%; }
+.hero-wordmark-layout .hero-wordmark {
+  flex-direction: row; align-items: baseline; justify-content: center; gap: 0.55rem;
+  width: 100%; white-space: nowrap; letter-spacing: -0.08em; line-height: 0.9;
 }
+.hero-wordmark-layout .hero-wordmark span {
+  font-family: var(--festival-title-font); font-size: clamp(1.6rem, 7vw, 6.5rem); line-height: 0.9;
+}
+.hero-wordmark-layout .hero-wordmark span:first-child,
+.hero-wordmark-layout .hero-wordmark span:last-child { font-weight: 900; }
+.hero-wordmark-layout .hero-wordmark span:last-child { margin-left: 0.14em; }
+.hero-wordmark-layout .hero-wordmark span:nth-child(2) {
+  font-family: Roboto, Helvetica, Arial, sans-serif; font-weight: 300; letter-spacing: -0.09em;
+}
+.hero-wordmark-layout .hero-text {
+  order: -1; flex-direction: row; align-items: baseline; justify-content: center;
+  gap: 0.5rem; line-height: 1;
+}
+.hero-wordmark-layout .hero-text span:first-child,
 .hero-wordmark-layout .hero-text span:last-child {
-  font-size: 0.85rem; font-weight: 700; letter-spacing: 0.18em;
+  font-family: Roboto, Helvetica, Arial, sans-serif; font-size: clamp(0.65rem, 1.4vw, 0.9rem);
+  font-weight: 400; letter-spacing: 0.02em; line-height: 1; text-transform: lowercase; color: var(--text);
 }
 .festival-picker {
   display: flex; align-items: center; justify-content: center; gap: 0.65rem;
@@ -363,9 +376,8 @@ td.selected .concert-artist, td.selected .concert-time { color: white; }
   .hero-logo { width: 48px; height: 48px; }
   .hero-text span:first-child { font-size: 2.3rem; }
   .hero-text span:last-child { font-size: 0.7rem; }
-  .hero-wordmark span:first-child { font-size: 2.4rem; }
-  .hero-wordmark span:last-child { font-size: 1.8rem; }
-  .hero-wordmark-layout .hero-text span:first-child { font-size: 1.2rem; }
+  .hero-wordmark-layout .hero-wordmark span { font-size: clamp(1.3rem, 7.2vw, 3rem); }
+  .hero-wordmark-layout .hero-text span:first-child,
   .hero-wordmark-layout .hero-text span:last-child { font-size: 0.65rem; }
   .festival-picker { justify-content: flex-start; margin-bottom: 1.25rem; }
   .selected-artists { margin: 1rem; padding: 1rem; border-radius: 1.2rem; }

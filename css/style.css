@@ -1,6 +1,8 @@
 :root {
-  --bg: #edf1f2;
-  --card: rgba(255,255,255,0.72);
+  --festival-background: #edf1f2;
+  --festival-surface: #ffffff;
+  --bg: var(--festival-background);
+  --card: color-mix(in srgb, var(--festival-surface) 72%, transparent);
   --text: #1b1b1b;
   --muted: rgba(0,0,0,0.55);
   --border: rgba(0,0,0,0.08);
@@ -52,7 +54,7 @@ body {
 .festival-picker[hidden] { display: none; }
 .festival-option {
   flex: 0 0 auto; padding: 0.7rem 1.2rem; border: 1px solid var(--border);
-  border-radius: 999px; background: rgba(255,255,255,0.72); color: var(--muted);
+  border-radius: 999px; background: var(--card); color: var(--muted);
   font: inherit; font-size: 0.8rem; font-weight: 800; text-decoration: none;
   transition: color 0.2s ease, background 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
 }
@@ -99,7 +101,7 @@ td.selectable:hover { cursor: pointer; }
 td.selected { position: relative; color: white; font-weight: 700; overflow: hidden; transform: translateZ(0); }
 .selected-artists {
   margin-top: 4rem; padding: 2rem;
-  background: rgba(255,255,255,0.72);
+  background: var(--card);
   border: 1px solid rgba(0,0,0,0.06); border-radius: 2rem;
   backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
   box-shadow: 0 20px 60px rgba(0,0,0,0.06);

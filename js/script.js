@@ -29,6 +29,8 @@ const rootStyles = document.documentElement.style;
 if (festivalTheme.primary) rootStyles.setProperty("--festival-primary", festivalTheme.primary);
 if (festivalTheme.secondary) rootStyles.setProperty("--festival-secondary", festivalTheme.secondary);
 if (festivalTheme.highlight) rootStyles.setProperty("--festival-highlight", festivalTheme.highlight);
+if (festivalTheme.background) rootStyles.setProperty("--festival-background", festivalTheme.background);
+if (festivalTheme.surface) rootStyles.setProperty("--festival-surface", festivalTheme.surface);
 const selectedArtists = {};
 const container = document.getElementById("schedule");
 const selectedContainer = document.getElementById("selected-artists-list");

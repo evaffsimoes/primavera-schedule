@@ -74,5 +74,84 @@ export const festivals = {
       ]
     },
     artistsWithoutSchedule: {}
+  },
+  "primavera-sound-porto-2027": {
+    name: "Primavera Sound",
+    location: "Porto 2027",
+    logo: "./assets/primalogo.png",
+    theme: {
+      primary: "#3b2b68",
+      secondary: "#d8d0e7",
+      highlight: "#c9d842",
+      background: "#f8f5e7",
+      surface: "#fffdf4"
+    },
+    stages: [],
+    days: {},
+    artistsWithoutSchedule: {
+      "10 june": [
+        "Fontaines D.C.",
+        "Lola Young",
+        "Tinashe",
+        "Theodora",
+        "Underscores",
+        "Dinosaur Jr.",
+        "Bonnie “Prince” Billy",
+        "Julien Baker",
+        "Sophia Stel",
+        "Westside Cowboy",
+        "Don Caballero",
+        "Ear",
+        "@",
+        "Cassete Pirata",
+        "Friko",
+        "IBSXJAUR",
+        "Mães Solteiras"
+      ],
+      "11 june": [
+        "Hayley Williams",
+        "Beabadoobee",
+        "Kim Petras",
+        "Bleachers",
+        "Anohni",
+        "Converge",
+        "DIIV",
+        "English Teacher",
+        "Branko",
+        "Maruja",
+        "Racing Mount Pleasant",
+        "Santiago Motorizado",
+        "Bia Soul",
+        "Piss",
+        "Twisted Teens",
+        "800 Gondomar",
+        "A Sul"
+      ],
+      "12 june": [
+        "FKA twigs",
+        "The Chemical Brothers",
+        "Metronomy",
+        "CHVRCHES",
+        "Wilco",
+        "Clã",
+        "Christine and the Queens",
+        "Shygirl",
+        "Marina Sena",
+        "Gurriers",
+        "Simian Mobile Disco",
+        "Juana Molina",
+        "PZ",
+        "pablopablo",
+        "Máquina.",
+        "Akrilla",
+        "Tristán!"
+      ],
+      "13 june (Primavera Bits)": [
+        "Josh Baker",
+        "Cloonee",
+        "Carlita",
+        "Trikk"
+      ]
+    }
   }
 };

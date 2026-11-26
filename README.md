@@ -12,7 +12,7 @@ Os dados ficam em `js/festival-data.js`, separados da interface e da ligação a
 
 1. Duplique a entrada de um festival dentro de `festivals`.
 2. Dê-lhe um identificador único e preencha `name`, `location` e `stages`.
-3. Defina `theme` para personalizar as cores: `primary` é a cor principal, `secondary` é a cor suave e `highlight` é usada nos destaques. Se omitir `theme` ou alguma destas propriedades, aplicam-se as cores padrão.
+3. Defina `theme` para personalizar as cores: `primary` é a cor principal, `secondary` é a cor suave, `highlight` é usada nos destaques e `background`/`surface` controlam o fundo e os cartões. Se omitir `theme` ou alguma destas propriedades, aplicam-se as cores padrão.
 4. Em `days`, crie uma lista para cada dia. Cada concerto com horário segue o formato `[horaInicio, horaFim, palco, artista]`, usando horas `HH:MM`.
 5. Em `artistsWithoutSchedule`, adicione os artistas anunciados mas ainda sem horário, organizados pelo mesmo nome de dia. Esses artistas podem ser selecionados e partilhados com o grupo; não entram no cálculo de conflitos até terem horários.
 
@@ -26,7 +26,9 @@ export const festivals = {
     theme: {
       primary: "#234567",
       secondary: "#aabbcc",
-      highlight: "#6789ab"
+      highlight: "#6789ab",
+      background: "#f8f5e7",
+      surface: "#fffdf4"
     },
     stages: ["Palco Principal", "Palco 2"],
     days: {
@@ -44,6 +46,8 @@ export const festivals = {
 Quando saírem os horários, mova o artista para `days` com início, fim e palco. Cada festival guarda as suas seleções separadamente.
 
 Cada festival também tem um URL próprio, usando o identificador como parâmetro: `index.html?festival=festival-exemplo`. Os separadores de festivais (quando houver mais do que um) são links para esses URLs, que podes guardar ou partilhar.
+
+O Primavera Sound Porto 2027 está incluído com a programação por dia do cartaz recebido. Como ainda não há horários nem palcos nesse cartaz, os artistas ficam em `artistsWithoutSchedule` até esses dados serem anunciados.
 
 ## Partilhar com amigos
 

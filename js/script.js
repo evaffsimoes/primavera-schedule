@@ -49,16 +49,32 @@ festivalIds.forEach(id => {
   }
   festivalSelector.appendChild(festivalLink);
 });
-document.querySelector(".hero-text span:first-child").textContent = festival.name;
-document.querySelector(".hero-text span:last-child").textContent = festival.location;
+const hero = document.querySelector(".hero");
+const heroLogo = document.querySelector(".hero-logo");
+const heroWordmark = document.getElementById("festival-wordmark");
+const heroTitle = document.querySelector(".hero-text span:first-child");
+const heroSubtitle = document.querySelector(".hero-text span:last-child");
+if (festival.branding) {
+  heroLogo.hidden = true;
+  heroWordmark.hidden = false;
+  heroWordmark.setAttribute("aria-label", festival.name);
+  heroWordmark.querySelectorAll("span").forEach((line, index) => {
+    line.textContent = festival.branding.wordmark[index] || "";
+  });
+  heroTitle.textContent = festival.branding.title;
+  heroSubtitle.textContent = festival.branding.subtitle;
+  hero.classList.add("hero-wordmark-layout");
+} else {
+  heroTitle.textContent = festival.name;
+  heroSubtitle.textContent = festival.location;
+  if (festival.logo) {
+    heroLogo.src = festival.logo;
+  } else {
+    heroLogo.hidden = true;
+  }
+}
 document.querySelector(".selected-title-group h2").textContent = `${festival.name} ${festival.location}`;
 document.title = `${festival.name} ${festival.location} — Festival Schedule`;
-const festivalLogo = document.querySelector(".hero-logo");
-if (festival.logo) {
-  festivalLogo.src = festival.logo;
-} else {
-  festivalLogo.hidden = true;
-}
 
 function concertId(day, artist) {
   return `${activeFestivalId}::${day}::${artist}`;

@@ -36,6 +36,14 @@ body {
   margin-top: 1rem; margin-bottom: 1.5rem;
 }
 .hero-logo { width: 84px; height: 84px; object-fit: contain; filter: drop-shadow(0 6px 20px color-mix(in srgb, var(--festival-primary) 15%, transparent)); }
+.hero-wordmark[hidden] { display: none; }
+.hero-wordmark {
+  display: flex; flex-direction: column; align-items: flex-end;
+  color: var(--text); font-family: "Arial Black", Arial, sans-serif;
+  font-weight: 900; line-height: 0.72; letter-spacing: -0.09em; text-transform: lowercase;
+}
+.hero-wordmark span:first-child { font-size: clamp(3rem, 7vw, 6rem); }
+.hero-wordmark span:last-child { margin-left: 0.55em; font-size: clamp(2.2rem, 5vw, 4rem); }
 .hero-text { display: flex; flex-direction: column; line-height: 0.9; }
 .hero-text span:first-child {
   font-family: "Cormorant Garamond", serif;
@@ -46,6 +54,16 @@ body {
   font-family: Roboto, Helvetica, Arial, sans-serif;
   font-size: clamp(1rem, 2vw, 1.6rem);
   font-weight: 500; text-transform: uppercase; letter-spacing: 0.08em; color: rgba(0,0,0,0.55);
+}
+.hero-wordmark-layout { flex-direction: column; gap: 0.7rem; }
+.hero-wordmark-layout .hero-wordmark { align-items: center; }
+.hero-wordmark-layout .hero-text { align-items: center; gap: 0.2rem; line-height: 1; }
+.hero-wordmark-layout .hero-text span:first-child {
+  font-family: "Arial Black", Arial, sans-serif; font-size: clamp(1.25rem, 3vw, 2rem);
+  font-weight: 900; letter-spacing: 0.14em; line-height: 1; text-transform: uppercase;
+}
+.hero-wordmark-layout .hero-text span:last-child {
+  font-size: 0.85rem; font-weight: 700; letter-spacing: 0.18em;
 }
 .festival-picker {
   display: flex; align-items: center; justify-content: center; gap: 0.65rem;
@@ -343,6 +361,10 @@ td.selected .concert-artist, td.selected .concert-time { color: white; }
   .hero-logo { width: 48px; height: 48px; }
   .hero-text span:first-child { font-size: 2.3rem; }
   .hero-text span:last-child { font-size: 0.7rem; }
+  .hero-wordmark span:first-child { font-size: 2.4rem; }
+  .hero-wordmark span:last-child { font-size: 1.8rem; }
+  .hero-wordmark-layout .hero-text span:first-child { font-size: 1.2rem; }
+  .hero-wordmark-layout .hero-text span:last-child { font-size: 0.65rem; }
   .festival-picker { justify-content: flex-start; margin-bottom: 1.25rem; }
   .selected-artists { margin: 1rem; padding: 1rem; border-radius: 1.2rem; }
   .selected-header { flex-direction: column; align-items: stretch; }

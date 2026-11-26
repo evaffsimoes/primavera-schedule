@@ -78,7 +78,11 @@ export const festivals = {
   "primavera-sound-porto-2027": {
     name: "Primavera Sound",
     location: "Porto 2027",
-    logo: "./assets/primalogo.png",
+    branding: {
+      wordmark: ["primavera", "sound"],
+      title: "Porto",
+      subtitle: "10–13 jun 2027"
+    },
     theme: {
       primary: "#3b2b68",
       secondary: "#d8d0e7",

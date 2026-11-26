@@ -84,9 +84,9 @@ export const festivals = {
       subtitle: "10–13 jun 2027"
     },
     theme: {
-      primary: "#3b2b68",
-      secondary: "#d8d0e7",
-      highlight: "#c9d842",
+      primary: "#d9dc6b",
+      secondary: "#d9dc6b",
+      highlight: "#c2adcc",
       background: "#f8f5e7",
       surface: "#fffdf4"
     },
@@ -150,7 +150,7 @@ export const festivals = {
         "Akrilla",
         "Tristán!"
       ],
-      "13 june (Primavera Bits)": [
+      "13 june": [
         "Josh Baker",
         "Cloonee",
         "Carlita",

@@ -42,6 +42,16 @@ body {
   font-size: clamp(1rem, 2vw, 1.6rem);
   font-weight: 500; text-transform: uppercase; letter-spacing: 0.08em; color: rgba(0,0,0,0.55);
 }
+.festival-picker {
+  display: flex; align-items: center; justify-content: center; gap: 0.75rem;
+  margin: 0 auto 2rem; color: var(--muted); font-size: 0.8rem; font-weight: 800;
+  letter-spacing: 0.08em; text-transform: uppercase;
+}
+.festival-picker select {
+  max-width: min(100%, 22rem); padding: 0.65rem 2.2rem 0.65rem 1rem;
+  border: 1px solid var(--border); border-radius: 999px; background: white;
+  color: var(--text); font: inherit; letter-spacing: normal; text-transform: none;
+}
 .day-container { margin-bottom: 3rem; padding: 0 2rem; }
 .day-container > h2 { font-size: 1.1rem; font-weight: 900; text-transform: uppercase; margin-bottom: 1rem; letter-spacing: -0.04em; }
 table {
@@ -216,6 +226,18 @@ td.selected { position: relative; color: white; font-weight: 700; overflow: hidd
 td.selectable:hover .concert-card { transform: translateY(-2px); filter: brightness(1.02); }
 .concert-artist { font-size: 1rem; font-weight: 800; line-height: 1.05; letter-spacing: -0.03em; color: #111; }
 .concert-time { font-size: 0.82rem; font-weight: 700; color: rgba(0,0,0,0.58); letter-spacing: -0.01em; }
+.unscheduled-heading { margin: 1.5rem 0 0.75rem; color: var(--muted); font-size: 0.8rem; text-transform: uppercase; }
+.unscheduled-list { display: flex; flex-wrap: wrap; gap: 0.75rem; }
+.unscheduled-artist {
+  display: flex; flex-direction: column; align-items: flex-start; gap: 0.4rem;
+  min-width: 10rem; padding: 0.8rem 1rem; border: 1px solid var(--border);
+  border-radius: 1rem; background: var(--card); color: var(--text); text-align: left;
+  font: inherit; cursor: pointer;
+}
+.unscheduled-artist.selected { border-color: var(--coral); background: var(--selected); color: white; }
+.unscheduled-artist.selected .concert-artist,
+.unscheduled-artist.selected .concert-time { color: white; }
+.schedule-item.unscheduled { border: 1px solid var(--border); border-radius: 0.8rem; padding-top: 0.8rem; padding-bottom: 0.8rem; }
 td.selected .concert-card {
   background: linear-gradient(135deg, #f4a8c7, #ff5a4f);
   border: none; box-shadow: 0 10px 24px rgba(255,90,79,0.25);
@@ -307,6 +329,8 @@ td.selected .concert-artist, td.selected .concert-time { color: white; }
   .hero-logo { width: 48px; height: 48px; }
   .hero-text span:first-child { font-size: 2.3rem; }
   .hero-text span:last-child { font-size: 0.7rem; }
+  .festival-picker { flex-direction: column; gap: 0.4rem; margin-bottom: 1.25rem; }
+  .festival-picker select { width: 100%; max-width: 22rem; }
   .selected-artists { margin: 1rem; padding: 1rem; border-radius: 1.2rem; }
   .selected-header { flex-direction: column; align-items: stretch; }
   .selected-artists h2 { font-size: 2rem; }

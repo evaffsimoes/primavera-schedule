@@ -1,17 +1,6 @@
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import { getFirestore, doc, setDoc, updateDoc, onSnapshot, getDoc, deleteField } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-
-const firebaseConfig = {
-  apiKey: "AIzaSyAezxySTUQLY2hCKJvqn8q_kz2anI50D-U",
-  authDomain: "primavera-schedule.firebaseapp.com",
-  projectId: "primavera-schedule",
-  storageBucket: "primavera-schedule.firebasestorage.app",
-  messagingSenderId: "1081905859375",
-  appId: "1:1081905859375:web:e68600892e39174ba9efda"
-};
-
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
+import { db } from "./firebase.js";
+import { festivals } from "./festival-data.js";
 
 // ── helpers ──────────────────────────────────────────────────────────────
 function timeToMinutes(timeStr) {
@@ -27,76 +16,44 @@ function minsToLabel(totalMins) {
   return `${String(hh).padStart(2, '0')}:${String(mm).padStart(2, '0')}`;
 }
 
-// ── dados ────────────────────────────────────────────────────────────────
-const data = {
-  "11 july": [
-    ["16:35", "17:25", "Primavera", "Vaiapraia"],
-    ["16:45", "17:35", "Estrella", "emmy Curl"],
-    ["17:40", "18:30", "Vodafone", "Inês Marques Lucas"],
-    ["17:40", "18:25", "ZYN", "The New Eves"],
-    ["18:35", "19:25", "Primavera", "PAUS"],
-    ["18:40", "19:30", "Estrella", "Nation of Language"],
-    ["19:35", "20:30", "ZYN", "rusowsky"],
-    ["19:40", "20:40", "Vodafone", "Sensible Soccers"],
-    ["20:45", "22:00", "Estrella", "Big Thief"],
-    ["20:45", "21:45", "Primavera", "Oklou"],
-    ["22:05", "23:35", "Vodafone", "Ethel Cain"],
-    ["22:10", "23:05", "ZYN", "Texas Is the Reason"],
-    ["23:40", "00:55", "Estrella", "The xx"],
-    ["23:40", "00:40", "Primavera", "Agriculture"],
-    ["01:00", "02:15", "Vodafone", "KNEECAP"],
-    ["01:25", "02:25", "ZYN", "Gelli Haha"],
-    ["02:40", "03:40", "Primavera", "Ninajirachi"]
-  ],
-  "12 july": [
-    ["16:35", "17:25", "Primavera", "Bestia Bebé"],
-    ["16:45", "17:35", "Estrella", "Rita Vian"],
-    ["17:40", "18:30", "Vodafone", "Buscabulla"],
-    ["17:40", "18:25", "ZYN", "Annahstasia"],
-    ["18:35", "19:25", "Primavera", "mark william lewis"],
-    ["18:40", "19:30", "Estrella", "Baxter Dury"],
-    ["19:35", "20:30", "ZYN", "Gisela João"],
-    ["19:40", "20:40", "Vodafone", "Panda Bear"],
-    ["20:50", "21:50", "Estrella", "Slowdive"],
-    ["20:50", "21:50", "Primavera", "Mari Froes"],
-    ["22:00", "23:00", "Vodafone", "Viagra Boys"],
-    ["22:00", "23:00", "ZYN", "Black Country, New Road"],
-    ["23:10", "00:40", "Estrella", "Gorillaz"],
-    ["23:20", "00:20", "Primavera", "Water From Your Eyes"],
-    ["00:45", "02:00", "Vodafone", "Bad Gyal"],
-    ["00:50", "01:50", "ZYN", "Melt-Banana"],
-    ["02:05", "03:05", "Primavera", "Joey Valence & Brae"]
-  ],
-  "13 july": [
-    ["16:35", "17:25", "Primavera", "Aiko el grupo"],
-    ["16:45", "17:35", "Estrella", "NAPA"],
-    ["17:40", "18:35", "ZYN", "The Sophs"],
-    ["17:45", "18:40", "Vodafone", "Triángulo de Amor Bizarro"],
-    ["18:40", "19:30", "Estrella", "Yard Act"],
-    ["18:45", "19:35", "Primavera", "Duquesa"],
-    ["19:35", "20:50", "Vodafone", "Mike D"],
-    ["19:40", "20:40", "ZYN", "Criolo, Amaro & Dino"],
-    ["20:55", "21:55", "Estrella", "JADE"],
-    ["21:00", "22:00", "Primavera", "Sudan Archives"],
-    ["22:05", "23:05", "Vodafone", "Amaarae"],
-    ["22:05", "23:05", "ZYN", "Smerz"],
-    ["23:15", "00:30", "Estrella", "Massive Attack"],
-    ["00:40", "02:10", "Vodafone", "IDLES"],
-    ["01:00", "02:00", "ZYN", "fakemink"],
-    ["02:15", "03:15", "Primavera", "Model/Actriz"]
-  ],
-  "14 july": [
-    ["15:00", "17:00", "ZYN", "SuM"],
-    ["17:00", "19:00", "ZYN", "Xinobi"],
-    ["19:00", "21:00", "ZYN", "Dixon"],
-    ["21:00", "23:00", "ZYN", "Peggy Gou"]
-  ]
-};
-
-const stages = ["Estrella", "Vodafone", "ZYN", "Primavera"];
+// Festival, palco e concertos estão definidos em festival-data.js.
+const festivalSelector = document.getElementById("festival-selector");
+const festivalIds = Object.keys(festivals);
+const storedFestivalId = localStorage.getItem("activeFestivalId");
+const activeFestivalId = festivals[storedFestivalId] ? storedFestivalId : festivalIds[0];
+const festival = festivals[activeFestivalId];
+const data = festival.days;
+const stages = festival.stages;
 const selectedArtists = {};
 const container = document.getElementById("schedule");
 const selectedContainer = document.getElementById("selected-artists-list");
+
+festivalSelector.innerHTML = festivalIds.map(id =>
+  `<option value="${id}">${festivals[id].name} — ${festivals[id].location}</option>`
+).join("");
+festivalSelector.value = activeFestivalId;
+festivalSelector.addEventListener("change", () => {
+  localStorage.setItem("activeFestivalId", festivalSelector.value);
+  window.location.reload();
+});
+document.querySelector(".hero-text span:first-child").textContent = festival.name;
+document.querySelector(".hero-text span:last-child").textContent = festival.location;
+document.querySelector(".selected-title-group h2").textContent = `${festival.name} ${festival.location}`;
+document.title = `${festival.name} ${festival.location} — Festival Schedule`;
+const festivalLogo = document.querySelector(".hero-logo");
+if (festival.logo) {
+  festivalLogo.src = festival.logo;
+} else {
+  festivalLogo.hidden = true;
+}
+
+function concertId(day, artist) {
+  return `${activeFestivalId}::${day}::${artist}`;
+}
+
+function friendAttends(friend, day, artist) {
+  return friend.concerts.includes(concertId(day, artist)) || friend.concerts.includes(artist);
+}
 
 const friendColors = ['#ff5a4f', '#ee6aa7', '#feb400', '#b0cf0d', '#089e5f', '#f4a8c7'];
 let friendsData = [];
@@ -134,7 +91,7 @@ function setupGroupListener() {
         friendsData.push({
           name: name,
           color: friendColors[colorIdx % friendColors.length],
-          concerts: info.concerts || []
+          concerts: info.concertsByFestival?.[activeFestivalId] || info.concerts || []
         });
       });
       updateSelectedArtists();
@@ -152,18 +109,18 @@ function updateGroupData() {
   Object.keys(selectedArtists).forEach(day => {
     selectedArtists[day].forEach(entry => {
       const parsed = JSON.parse(entry);
-      userConcerts.push(parsed.artist);
+      userConcerts.push(concertId(day, parsed.artist));
     });
   });
 
   const groupRef = doc(db, "groups", currentGroupId);
   updateDoc(groupRef, {
-    [`members.${currentUserName}`]: { concerts: userConcerts }
+    [`members.${currentUserName}.concertsByFestival.${activeFestivalId}`]: userConcerts
   }).catch(err => {
     // Se o documento não existir ainda
     setDoc(groupRef, {
       members: {
-        [currentUserName]: { concerts: userConcerts }
+        [currentUserName]: { concertsByFestival: { [activeFestivalId]: userConcerts } }
       }
     }, { merge: true }).catch(err2 => {
       showFlash("Save Error: " + err2.message);
@@ -174,17 +131,23 @@ function updateGroupData() {
 
 setupGroupListener();
 
-// saved selection
+// Seleções guardadas separadamente por festival.
+const selectionStorageKey = `selectedArtists:${activeFestivalId}`;
 try {
-  const saved = localStorage.getItem('selectedArtists');
+  const saved = localStorage.getItem(selectionStorageKey) ||
+    (activeFestivalId === festivalIds[0] ? localStorage.getItem("selectedArtists") : null);
   if (saved) {
     const parsed = JSON.parse(saved);
     Object.keys(parsed).forEach(day => selectedArtists[day] = new Set(parsed[day]));
   }
-} catch (e) { }
+} catch (error) {
+  showFlash("Could not load saved selections.");
+  console.error("Saved selection error:", error);
+}
 
 // ── build tables ─────────────────────────────────────────────────────────
-Object.keys(data).forEach(day => {
+const days = [...new Set([...Object.keys(data), ...Object.keys(festival.artistsWithoutSchedule || {})])];
+days.forEach(day => {
   if (!selectedArtists[day]) selectedArtists[day] = new Set();
 
   const dayDiv = document.createElement("div");
@@ -199,10 +162,7 @@ Object.keys(data).forEach(day => {
   clearBtn.addEventListener('click', () => {
     selectedArtists[day].clear();
 
-    const dayTable = dayDiv.querySelector('table');
-    if (dayTable) {
-      dayTable.querySelectorAll('.selectable.selected').forEach(td => td.classList.remove('selected'));
-    }
+    dayDiv.querySelectorAll('.selectable.selected').forEach(item => item.classList.remove('selected'));
 
     updateSelectedArtists();
     saveSelectedArtists();
@@ -220,7 +180,7 @@ Object.keys(data).forEach(day => {
   const concertsByStage = {};
   stages.forEach(s => concertsByStage[s] = []);
 
-  data[day].forEach(([start, end, stage, artist]) => {
+  (data[day] || []).forEach(([start, end, stage, artist]) => {
     if (!concertsByStage[stage]) return;
     concertsByStage[stage].push({
       artist, stage, start, end,
@@ -231,7 +191,7 @@ Object.keys(data).forEach(day => {
 
   // 30 minutos slots
   let allMins = [];
-  data[day].forEach(([start, end]) => {
+  (data[day] || []).forEach(([start, end]) => {
     allMins.push(timeToMinutes(start), timeToMinutes(end));
   });
   const minTime = Math.floor(Math.min(...allMins) / 30) * 30;
@@ -283,6 +243,7 @@ Object.keys(data).forEach(day => {
       td.rowSpan = rowspan;
       td.classList.add("selectable");
       td.setAttribute("data-artist", concert.artist);
+      td.setAttribute("data-day", day);
       td.innerHTML = `
         <div class="concert-card">
           <div class="concert-artist">${concert.artist}</div>
@@ -319,18 +280,59 @@ Object.keys(data).forEach(day => {
   });
 
   table.appendChild(tbody);
-  dayDiv.appendChild(table);
+  if ((data[day] || []).length > 0) {
+    dayDiv.appendChild(table);
+  }
+
+  const unscheduledArtists = festival.artistsWithoutSchedule?.[day] || [];
+  if (unscheduledArtists.length > 0) {
+    const unscheduledHeading = document.createElement("h3");
+    unscheduledHeading.className = "unscheduled-heading";
+    unscheduledHeading.textContent = "Artists — schedule to be announced";
+    dayDiv.appendChild(unscheduledHeading);
+
+    const unscheduledList = document.createElement("div");
+    unscheduledList.className = "unscheduled-list";
+    unscheduledArtists.forEach(artist => {
+      const card = document.createElement("button");
+      card.type = "button";
+      card.className = "unscheduled-artist selectable";
+      card.dataset.artist = artist;
+      card.dataset.day = day;
+      const entry = JSON.stringify({ artist, stage: "TBA", start: null, end: null, unscheduled: true });
+      card.classList.toggle("selected", selectedArtists[day].has(entry));
+      card.innerHTML = `<span class="concert-artist"></span><span class="concert-time">Horário por anunciar</span><span class="grid-friends-container"></span>`;
+      card.querySelector(".concert-artist").textContent = artist;
+      card.addEventListener("click", () => {
+        if (selectedArtists[day].has(entry)) {
+          selectedArtists[day].delete(entry);
+          card.classList.remove("selected");
+        } else {
+          selectedArtists[day].add(entry);
+          card.classList.add("selected");
+        }
+        updateSelectedArtists();
+        saveSelectedArtists();
+        updateGroupData();
+      });
+      unscheduledList.appendChild(card);
+    });
+    dayDiv.appendChild(unscheduledList);
+  }
+
   container.appendChild(dayDiv);
 });
 
 // ── artistas selecionados ──────────────────────────────────────
 function hasConflict(currentEntry, allEntries) {
   const current = JSON.parse(currentEntry);
+  if (!current.start || !current.end) return false;
   const currentStart = timeToMinutes(current.start);
   const currentEnd = timeToMinutes(current.end);
   return allEntries.some(entry => {
     if (entry === currentEntry) return false;
     const other = JSON.parse(entry);
+    if (!other.start || !other.end) return false;
     const otherStart = timeToMinutes(other.start);
     const otherEnd = timeToMinutes(other.end);
     return currentStart < otherEnd && currentEnd > otherStart;
@@ -353,22 +355,23 @@ function updateSelectedArtists() {
 
     const entriesArr = Array.from(selectedArtists[day]);
     const parsedEntries = entriesArr.map(e => JSON.parse(e));
+    const scheduledEntries = parsedEntries.filter(entry => entry.start && entry.end);
 
-    if (parsedEntries.length > 0) {
-      let minMins = Math.min(...parsedEntries.map(e => timeToMinutes(e.start)));
-      let maxMins = Math.max(...parsedEntries.map(e => timeToMinutes(e.end)));
+    if (scheduledEntries.length > 0) {
+      let minMins = Math.min(...scheduledEntries.map(e => timeToMinutes(e.start)));
+      let maxMins = Math.max(...scheduledEntries.map(e => timeToMinutes(e.end)));
       const totalMins = maxMins - minMins;
       const safeTotal = totalMins > 0 ? totalMins : 1;
 
       const summaryDiv = document.createElement("div");
       summaryDiv.className = "day-summary";
 
-      const sortedByStart = [...parsedEntries].sort((a, b) => timeToMinutes(a.start) - timeToMinutes(b.start));
-      const sortedByEnd = [...parsedEntries].sort((a, b) => timeToMinutes(a.end) - timeToMinutes(b.end));
+      const sortedByStart = [...scheduledEntries].sort((a, b) => timeToMinutes(a.start) - timeToMinutes(b.start));
+      const sortedByEnd = [...scheduledEntries].sort((a, b) => timeToMinutes(a.end) - timeToMinutes(b.end));
       const startLabel = sortedByStart[0].start;
-      const endLabel = sortedByEnd[0].end;
+      const endLabel = sortedByEnd[sortedByEnd.length - 1].end;
 
-      const sortedEntries = [...parsedEntries].sort((a, b) => timeToMinutes(a.start) - timeToMinutes(b.start));
+      const sortedEntries = [...scheduledEntries].sort((a, b) => timeToMinutes(a.start) - timeToMinutes(b.start));
       let segmentsHTML = '';
       let labelsHTML = '';
 
@@ -400,7 +403,7 @@ function updateSelectedArtists() {
         labelsHTML += `<div class="ds-label ${c.stage.toLowerCase()}" style="left:${centerPct}%; top:${topOffset}px;">${labelName}</div>`;
       });
 
-      const numC = parsedEntries.length;
+      const numC = scheduledEntries.length;
       summaryDiv.innerHTML = `
         <div class="day-summary-text">${startLabel} &rarr; ${endLabel} &bull; ${numC} gig${numC > 1 ? 's' : ''}</div>
         <div class="day-summary-bar">${segmentsHTML}</div>
@@ -413,16 +416,22 @@ function updateSelectedArtists() {
     scheduleList.className = "schedule-list";
 
     entriesArr
-      .sort((a, b) => timeToSortableNumber(JSON.parse(a).start) - timeToSortableNumber(JSON.parse(b).start))
+      .sort((a, b) => {
+        const first = JSON.parse(a);
+        const second = JSON.parse(b);
+        if (!first.start) return second.start ? 1 : 0;
+        if (!second.start) return -1;
+        return timeToSortableNumber(first.start) - timeToSortableNumber(second.start);
+      })
       .forEach(entry => {
         const parsed = JSON.parse(entry);
         const item = document.createElement("div");
         item.className = `schedule-item ${parsed.stage.toLowerCase()}`;
-        const conflict = hasConflict(entry, Array.from(selectedArtists[day]));
+        const conflict = !parsed.unscheduled && hasConflict(entry, Array.from(selectedArtists[day]));
         if (conflict) item.classList.add("conflict");
 
         // amigos que vão a este concerto
-        const attendingFriends = friendsData.filter(f => f.concerts.includes(parsed.artist));
+        const attendingFriends = friendsData.filter(f => friendAttends(f, day, parsed.artist));
         let friendsHTML = '';
         if (attendingFriends.length > 0) {
           friendsHTML = '<div class="friends-avatars">';
@@ -433,7 +442,15 @@ function updateSelectedArtists() {
           friendsHTML += '</div>';
         }
 
-        item.innerHTML = `
+        item.innerHTML = parsed.unscheduled ? `
+          <div class="schedule-item-content">
+            <div class="schedule-artist">${parsed.artist}</div>
+            <div class="schedule-details">
+              <span class="stage-badge">Horário por anunciar</span>
+              ${friendsHTML}
+            </div>
+          </div>
+        ` : `
           <div class="schedule-time-stacked">
             <span class="time-start">${parsed.start}</span>
             <span class="time-end">${parsed.end}</span>
@@ -461,12 +478,13 @@ function updateSelectedArtists() {
   }
 
   // update schedule grid
-  document.querySelectorAll('td.selectable').forEach(td => {
+  document.querySelectorAll('td.selectable, .unscheduled-artist').forEach(td => {
     const artist = td.getAttribute('data-artist');
+    const day = td.getAttribute('data-day');
     const container = td.querySelector('.grid-friends-container');
     if (!container) return;
 
-    const attendingFriends = friendsData.filter(f => f.concerts.includes(artist));
+    const attendingFriends = friendsData.filter(f => friendAttends(f, day, artist));
     if (attendingFriends.length > 0) {
       let friendsHTML = '<div class="friends-avatars" style="margin-top: 6px; justify-content: center;">';
       attendingFriends.forEach(f => {
@@ -483,10 +501,13 @@ function updateSelectedArtists() {
 
 function saveSelectedArtists() {
   try {
-    localStorage.setItem('selectedArtists', JSON.stringify(
+    localStorage.setItem(selectionStorageKey, JSON.stringify(
       Object.fromEntries(Object.entries(selectedArtists).map(([day, set]) => [day, Array.from(set)]))
     ));
-  } catch (e) { }
+  } catch (error) {
+    showFlash("Could not save your selections.");
+    console.error("Save selection error:", error);
+  }
 }
 
 // ── exportar imagem ──────────────────────────────────────────────────────

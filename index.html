@@ -7,19 +7,23 @@
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500&display=swap" rel="stylesheet">
   <meta charset="UTF-8" />
-  <title>Schedule Primavera</title>
+  <title>Festival Schedule</title>
   <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no" />
-  <link rel="stylesheet" href="./css/style.css?v=6">
+  <link rel="stylesheet" href="./css/style.css?v=7">
 </head>
 
 <body>
   <div class="content">
     <div class="hero">
-      <img class="hero-logo" src="./assets/primalogo.png" alt="Primavera Sound Logo" />
+      <img class="hero-logo" src="./assets/primalogo.png" alt="Logo do festival" />
       <div class="hero-text">
         <span>Primavera Sound</span>
         <span>Porto</span>
       </div>
+    </div>
+    <div class="festival-picker">
+      <label for="festival-selector">Festival</label>
+      <select id="festival-selector" aria-label="Escolher festival"></select>
     </div>
     <div id="schedule"></div>
     <div class="selected-artists" id="selected-artists">

@@ -37,6 +37,8 @@ export const festivals = {
 
 Quando saírem os horários, mova o artista para `days` com início, fim e palco. Cada festival guarda as suas seleções separadamente.
 
+Cada festival também tem um URL próprio, usando o identificador como parâmetro: `index.html?festival=festival-exemplo`. Os separadores de festivais (quando houver mais do que um) são links para esses URLs, que podes guardar ou partilhar.
+
 ## Partilhar com amigos
 
 Os grupos usam Firebase Firestore. A configuração do projeto está em `js/firebase.js`. Para partilhar agendas em produção, confirme que o Firestore está ativado e configurado com regras de acesso apropriadas; a configuração do browser não substitui regras de segurança.

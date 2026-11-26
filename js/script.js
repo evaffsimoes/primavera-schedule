@@ -19,8 +19,8 @@ function minsToLabel(totalMins) {
 // Festival, palco e concertos estão definidos em festival-data.js.
 const festivalSelector = document.getElementById("festival-selector");
 const festivalIds = Object.keys(festivals);
-const storedFestivalId = localStorage.getItem("activeFestivalId");
-const activeFestivalId = festivals[storedFestivalId] ? storedFestivalId : festivalIds[0];
+const requestedFestivalId = new URLSearchParams(window.location.search).get("festival");
+const activeFestivalId = festivals[requestedFestivalId] ? requestedFestivalId : festivalIds[0];
 const festival = festivals[activeFestivalId];
 const data = festival.days;
 const stages = festival.stages;
@@ -30,17 +30,17 @@ const selectedContainer = document.getElementById("selected-artists-list");
 
 festivalSelector.hidden = festivalIds.length < 2;
 festivalIds.forEach(id => {
-  const festivalButton = document.createElement("button");
-  festivalButton.type = "button";
-  festivalButton.className = "festival-option";
-  festivalButton.textContent = `${festivals[id].name} — ${festivals[id].location}`;
-  festivalButton.setAttribute("aria-pressed", String(id === activeFestivalId));
-  if (id === activeFestivalId) festivalButton.classList.add("active");
-  festivalButton.addEventListener("click", () => {
-    localStorage.setItem("activeFestivalId", id);
-    window.location.reload();
-  });
-  festivalSelector.appendChild(festivalButton);
+  const festivalLink = document.createElement("a");
+  const festivalUrl = new URL(window.location.href);
+  festivalUrl.searchParams.set("festival", id);
+  festivalLink.href = festivalUrl.toString();
+  festivalLink.className = "festival-option";
+  festivalLink.textContent = `${festivals[id].name} — ${festivals[id].location}`;
+  if (id === activeFestivalId) {
+    festivalLink.classList.add("active");
+    festivalLink.setAttribute("aria-current", "page");
+  }
+  festivalSelector.appendChild(festivalLink);
 });
 document.querySelector(".hero-text span:first-child").textContent = festival.name;
 document.querySelector(".hero-text span:last-child").textContent = festival.location;

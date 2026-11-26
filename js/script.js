@@ -24,11 +24,24 @@ const festivalSelector = document.getElementById("festival-selector");
 const festivalPickerToggle = document.getElementById("festival-picker-toggle");
 const festivalOptions = document.getElementById("festival-options");
 const festivalIds = Object.keys(festivals);
-const requestedFestivalId = new URLSearchParams(window.location.search).get("festival");
+const searchParams = new URLSearchParams(window.location.search);
+const requestedFestivalId = searchParams.get("festival");
 const activeFestivalId = festivals[requestedFestivalId] ? requestedFestivalId : festivalIds[0];
 const festival = festivals[activeFestivalId];
-const data = festival.days;
-const stages = festival.stages;
+const isSchedulePreview = activeFestivalId === "primavera-sound-porto-2027" && searchParams.get("preview") === "schedule";
+const previewStages = ["Stage A", "Stage B", "Stage C", "Stage D"];
+function createPreviewSchedule(artistsByDay) {
+  return Object.fromEntries(Object.entries(artistsByDay).map(([day, artists]) => [
+    day,
+    artists.map((artist, index) => {
+      const start = 16 * 60 + Math.floor(index / previewStages.length) * 90;
+      return [minsToLabel(start), minsToLabel(start + 60), previewStages[index % previewStages.length], artist];
+    })
+  ]));
+}
+const data = isSchedulePreview ? createPreviewSchedule(festival.artistsWithoutSchedule || {}) : festival.days;
+const stages = isSchedulePreview ? previewStages : festival.stages;
+const artistsWithoutSchedule = isSchedulePreview ? {} : festival.artistsWithoutSchedule || {};
 const festivalTheme = festival.theme || {};
 const rootStyles = document.documentElement.style;
 if (festivalTheme.primary) rootStyles.setProperty("--festival-primary", festivalTheme.primary);
@@ -38,6 +51,17 @@ if (festivalTheme.clearDayBackground) rootStyles.setProperty("--clear-day-backgr
 if (festivalTheme.background) rootStyles.setProperty("--festival-background", festivalTheme.background);
 if (festivalTheme.surface) rootStyles.setProperty("--festival-surface", festivalTheme.surface);
 if (festival.branding) rootStyles.setProperty("--festival-title-font", '"Arial Black", Arial, sans-serif');
+if (isSchedulePreview) {
+  const previewNotice = document.createElement("p");
+  previewNotice.className = "schedule-preview-notice";
+  previewNotice.textContent = "Preview only — all times and stages are fictional, not official.";
+  document.getElementById("day-filter").before(previewNotice);
+  ["download-image", "create-group", "join-group", "leave-group"].forEach(id => {
+    const button = document.getElementById(id);
+    button.disabled = true;
+    button.title = "Unavailable in preview mode";
+  });
+}
 const selectedArtists = {};
 const container = document.getElementById("schedule");
 const selectedContainer = document.getElementById("selected-artists-list");
@@ -105,7 +129,7 @@ if (festival.branding) {
     heroLogo.hidden = true;
   }
 }
-document.querySelector(".selected-title-group h2").textContent = `${festival.name} ${festival.location}`;
+document.querySelector(".selected-title-group h2, .selected-title-group h3").textContent = `${festival.name} ${festival.location}`;
 document.title = `${festival.name} ${festival.location} — Festival Schedule`;
 
 function concertId(day, artist) {
@@ -123,7 +147,7 @@ let currentUserName = localStorage.getItem('currentUserName') || null;
 let groupUnsubscribe = null;
 
 function setupGroupListener() {
-  if (!currentGroupId || !currentUserName) {
+  if (isSchedulePreview || !currentGroupId || !currentUserName) {
     document.getElementById('active-group-info').style.display = 'none';
     document.getElementById('leave-group').style.display = 'none';
     document.getElementById('create-group').style.display = '';
@@ -165,7 +189,7 @@ function setupGroupListener() {
 }
 
 function updateGroupData() {
-  if (!currentGroupId || !currentUserName) return;
+  if (isSchedulePreview || !currentGroupId || !currentUserName) return;
   const userConcerts = [];
   Object.keys(selectedArtists).forEach(day => {
     selectedArtists[day].forEach(entry => {
@@ -193,7 +217,9 @@ function updateGroupData() {
 setupGroupListener();
 
 // Selections are stored separately for each festival.
-const selectionStorageKey = `selectedArtists:${activeFestivalId}`;
+const selectionStorageKey = isSchedulePreview
+  ? `selectedArtists:preview:${activeFestivalId}`
+  : `selectedArtists:${activeFestivalId}`;
 try {
   const saved = localStorage.getItem(selectionStorageKey) ||
     (activeFestivalId === festivalIds[0] ? localStorage.getItem("selectedArtists") : null);
@@ -207,7 +233,7 @@ try {
 }
 
 // ── build tables ─────────────────────────────────────────────────────────
-const days = [...new Set([...Object.keys(data), ...Object.keys(festival.artistsWithoutSchedule || {})])];
+const days = [...new Set([...Object.keys(data), ...Object.keys(artistsWithoutSchedule)])];
 dayFilter.hidden = days.length < 2;
 
 const allDaysButton = document.createElement("button");
@@ -375,7 +401,7 @@ days.forEach(day => {
     dayDiv.appendChild(table);
   }
 
-  const unscheduledArtists = festival.artistsWithoutSchedule?.[day] || [];
+  const unscheduledArtists = artistsWithoutSchedule[day] || [];
   if (unscheduledArtists.length > 0) {
     const unscheduledHeading = document.createElement("h3");
     unscheduledHeading.className = "unscheduled-heading";

@@ -9,7 +9,7 @@
   --festival-primary: #ff5a4f;
   --festival-secondary: #f4a8c7;
   --festival-highlight: #ff4f8b;
-  --clear-day-background: var(--festival-highlight);
+  --clear-day-background: var(--festival-surface);
   --pink-light: var(--festival-secondary);
   --pink: var(--festival-primary);
   --pink-strong: var(--festival-highlight);
@@ -332,15 +332,15 @@ td.selected .concert-artist, td.selected .concert-time { color: white; }
   padding: 0.3rem 0.7rem;
   font-size: 0.55rem;
   border-radius: 999px;
-  border: 1px solid var(--clear-day-background);
+  border: 1px solid var(--festival-highlight);
   background: var(--clear-day-background);
-  color: var(--text);
+  color: var(--festival-highlight);
   cursor: pointer;
   font-family: inherit;
   font-weight: 800;
   letter-spacing: 0.05em;
   text-transform: uppercase;
-  box-shadow: 0 4px 12px color-mix(in srgb, var(--festival-primary) 15%, transparent);
+  box-shadow: 0 4px 12px color-mix(in srgb, var(--festival-highlight) 15%, transparent);
 }
 
 @media (max-width: 900px) {

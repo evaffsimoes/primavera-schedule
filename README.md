@@ -12,7 +12,7 @@ Os dados ficam em `js/festival-data.js`, separados da interface e da ligação a
 
 1. Duplique a entrada de um festival dentro de `festivals`.
 2. Dê-lhe um identificador único e preencha `name`, `location` e `stages`.
-3. Defina `theme` para personalizar as cores: `primary` é a cor principal, `secondary` é a cor suave, `highlight` é usada nos destaques e no fundo do botão “Clear Day”, e `background`/`surface` controlam o fundo e os cartões. Define `clearDayBackground` se quiseres uma cor diferente para esse botão. Se omitir `theme` ou alguma destas propriedades, aplicam-se as cores padrão.
+3. Defina `theme` para personalizar as cores: `primary` é a cor principal, `secondary` é a cor suave, `highlight` é usada nos destaques e no contorno/texto do botão “Clear Day”, e `background`/`surface` controlam o fundo e os cartões. O fundo do botão usa `surface`, a menos que definas `clearDayBackground`. Se omitir `theme` ou alguma destas propriedades, aplicam-se as cores padrão.
 4. Se o festival tiver um wordmark próprio, defina `branding.wordmark`, `branding.title` e `branding.subtitle`. Sem `branding`, são usados o logo e o título padrão.
 5. Em `days`, crie uma lista para cada dia. Cada concerto com horário segue o formato `[horaInicio, horaFim, palco, artista]`, usando horas `HH:MM`.
 6. Em `artistsWithoutSchedule`, adicione os artistas anunciados mas ainda sem horário, organizados pelo mesmo nome de dia. Esses artistas podem ser selecionados e partilhados com o grupo; não entram no cálculo de conflitos até terem horários.

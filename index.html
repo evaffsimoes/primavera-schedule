@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="pt">
+<html lang="en">
 
 <head>
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -9,13 +9,13 @@
   <meta charset="UTF-8" />
   <title>Festival Schedule</title>
   <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no" />
-  <link rel="stylesheet" href="./css/style.css?v=20">
+  <link rel="stylesheet" href="./css/style.css?v=21">
 </head>
 
 <body>
   <div class="content">
     <div class="hero">
-      <img class="hero-logo" src="./assets/primalogo.png" alt="Logo do festival" />
+      <img class="hero-logo" src="./assets/primalogo.png" alt="Festival logo" />
       <div class="hero-wordmark" id="festival-wordmark" role="img" hidden>
         <span></span>
         <span></span>
@@ -26,12 +26,13 @@
         <span>Porto</span>
       </div>
     </div>
-    <nav class="festival-picker" id="festival-selector" aria-label="Escolher festival" hidden>
-      <button class="festival-picker-toggle" id="festival-picker-toggle" type="button" aria-label="Escolher festival" aria-expanded="false" aria-controls="festival-options">
+    <nav class="festival-picker" id="festival-selector" aria-label="Choose festival" hidden>
+      <button class="festival-picker-toggle" id="festival-picker-toggle" type="button" aria-label="Choose festival" aria-expanded="false" aria-controls="festival-options">
         <span aria-hidden="true">›</span>
       </button>
       <div class="festival-options" id="festival-options" hidden></div>
     </nav>
+    <nav class="day-filter" id="day-filter" aria-label="Filter schedule by day"></nav>
     <div id="schedule"></div>
     <div class="selected-artists" id="selected-artists">
       <div class="selected-header">
@@ -43,7 +44,7 @@
       <div class="selected-divider"></div>
       <div id="selected-artists-list"></div>
       <div class="action-buttons">
-        <button id="download-image" title="Guardar imagem">Export</button>
+        <button id="download-image" title="Save image">Export</button>
         <button id="create-group" title="Create a new group">Create Group</button>
         <button id="join-group" title="Join an existing group">Join Group</button>
         <button id="leave-group" title="Exit Group" style="display:none;">Exit Group</button>

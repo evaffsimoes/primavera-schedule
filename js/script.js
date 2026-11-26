@@ -15,8 +15,11 @@ function minsToLabel(totalMins) {
   const mm = totalMins % 60;
   return `${String(hh).padStart(2, '0')}:${String(mm).padStart(2, '0')}`;
 }
+function formatDayLabel(day) {
+  return day.replace(/\b[a-z]/g, letter => letter.toUpperCase());
+}
 
-// Festival, palco e concertos estão definidos em festival-data.js.
+// Festival, stages, and concerts are defined in festival-data.js.
 const festivalSelector = document.getElementById("festival-selector");
 const festivalPickerToggle = document.getElementById("festival-picker-toggle");
 const festivalOptions = document.getElementById("festival-options");
@@ -38,12 +41,13 @@ if (festival.branding) rootStyles.setProperty("--festival-title-font", '"Arial B
 const selectedArtists = {};
 const container = document.getElementById("schedule");
 const selectedContainer = document.getElementById("selected-artists-list");
+const dayFilter = document.getElementById("day-filter");
 
 festivalSelector.hidden = festivalIds.length < 2;
 function closeFestivalPicker(returnFocus = false) {
   festivalOptions.hidden = true;
   festivalPickerToggle.setAttribute("aria-expanded", "false");
-  festivalPickerToggle.setAttribute("aria-label", "Escolher festival");
+  festivalPickerToggle.setAttribute("aria-label", "Choose festival");
   if (returnFocus) festivalPickerToggle.focus();
 }
 
@@ -51,7 +55,7 @@ festivalPickerToggle.addEventListener("click", () => {
   const isExpanded = festivalPickerToggle.getAttribute("aria-expanded") === "true";
   festivalOptions.hidden = isExpanded;
   festivalPickerToggle.setAttribute("aria-expanded", String(!isExpanded));
-  festivalPickerToggle.setAttribute("aria-label", isExpanded ? "Escolher festival" : "Fechar opções de festival");
+  festivalPickerToggle.setAttribute("aria-label", isExpanded ? "Choose festival" : "Close festival options");
 });
 
 document.addEventListener("click", event => {
@@ -174,7 +178,7 @@ function updateGroupData() {
   updateDoc(groupRef, {
     [`members.${currentUserName}.concertsByFestival.${activeFestivalId}`]: userConcerts
   }).catch(err => {
-    // Se o documento não existir ainda
+    // If the document does not exist yet.
     setDoc(groupRef, {
       members: {
         [currentUserName]: { concertsByFestival: { [activeFestivalId]: userConcerts } }
@@ -188,7 +192,7 @@ function updateGroupData() {
 
 setupGroupListener();
 
-// Seleções guardadas separadamente por festival.
+// Selections are stored separately for each festival.
 const selectionStorageKey = `selectedArtists:${activeFestivalId}`;
 try {
   const saved = localStorage.getItem(selectionStorageKey) ||
@@ -204,16 +208,46 @@ try {
 
 // ── build tables ─────────────────────────────────────────────────────────
 const days = [...new Set([...Object.keys(data), ...Object.keys(festival.artistsWithoutSchedule || {})])];
+dayFilter.hidden = days.length < 2;
+
+const allDaysButton = document.createElement("button");
+allDaysButton.type = "button";
+allDaysButton.className = "day-filter-option";
+allDaysButton.dataset.day = "";
+allDaysButton.textContent = "All days";
+allDaysButton.addEventListener("click", () => setActiveDayFilter(""));
+dayFilter.appendChild(allDaysButton);
+
+days.forEach(day => {
+  const dayButton = document.createElement("button");
+  dayButton.type = "button";
+  dayButton.className = "day-filter-option";
+  dayButton.dataset.day = day;
+  dayButton.textContent = formatDayLabel(day);
+  dayButton.addEventListener("click", () => setActiveDayFilter(day));
+  dayFilter.appendChild(dayButton);
+});
+
+function setActiveDayFilter(activeDay) {
+  dayFilter.querySelectorAll(".day-filter-option").forEach(button => {
+    button.setAttribute("aria-pressed", String(button.dataset.day === activeDay));
+  });
+  container.querySelectorAll(".day-container").forEach(daySection => {
+    daySection.hidden = Boolean(activeDay) && daySection.dataset.day !== activeDay;
+  });
+}
+
 days.forEach(day => {
   if (!selectedArtists[day]) selectedArtists[day] = new Set();
 
   const dayDiv = document.createElement("div");
   dayDiv.className = "day-container";
+  dayDiv.dataset.day = day;
   const titleEl = document.createElement("h2");
   titleEl.style.display = "flex";
   titleEl.style.justifyContent = "space-between";
   titleEl.style.alignItems = "center";
-  titleEl.innerHTML = `<span>${day}</span> <button class="btn-clear-day" title="Clear this day">Clear Day</button>`;
+  titleEl.innerHTML = `<span>${formatDayLabel(day)}</span> <button class="btn-clear-day" title="Clear this day">Clear Day</button>`;
 
   const clearBtn = titleEl.querySelector('.btn-clear-day');
   clearBtn.addEventListener('click', () => {
@@ -224,7 +258,7 @@ days.forEach(day => {
     updateSelectedArtists();
     saveSelectedArtists();
     updateGroupData();
-    showFlash(`Schedule cleared for ${day}!`);
+    showFlash(`Schedule cleared for ${formatDayLabel(day)}!`);
   });
 
   dayDiv.appendChild(titleEl);
@@ -246,7 +280,7 @@ days.forEach(day => {
     });
   });
 
-  // 30 minutos slots
+  // 30-minute slots.
   let allMins = [];
   (data[day] || []).forEach(([start, end]) => {
     allMins.push(timeToMinutes(start), timeToMinutes(end));
@@ -358,7 +392,7 @@ days.forEach(day => {
       card.dataset.day = day;
       const entry = JSON.stringify({ artist, stage: "TBA", start: null, end: null, unscheduled: true });
       card.classList.toggle("selected", selectedArtists[day].has(entry));
-      card.innerHTML = `<span class="concert-artist"></span><span class="concert-time">Horário por anunciar</span><span class="grid-friends-container"></span>`;
+      card.innerHTML = `<span class="concert-artist"></span><span class="concert-time">Time TBA</span><span class="grid-friends-container"></span>`;
       card.querySelector(".concert-artist").textContent = artist;
       card.addEventListener("click", () => {
         if (selectedArtists[day].has(entry)) {
@@ -380,7 +414,9 @@ days.forEach(day => {
   container.appendChild(dayDiv);
 });
 
-// ── artistas selecionados ──────────────────────────────────────
+setActiveDayFilter("");
+
+// ── selected artists ────────────────────────────────────────────
 function hasConflict(currentEntry, allEntries) {
   const current = JSON.parse(currentEntry);
   if (!current.start || !current.end) return false;
@@ -403,7 +439,7 @@ function updateSelectedArtists() {
     const section = document.createElement("div");
     section.className = "selected-day-section";
     const title = document.createElement("h3");
-    title.textContent = day;
+    title.textContent = formatDayLabel(day);
     section.appendChild(title);
 
     const divider = document.createElement("div");
@@ -462,7 +498,7 @@ function updateSelectedArtists() {
 
       const numC = scheduledEntries.length;
       summaryDiv.innerHTML = `
-        <div class="day-summary-text">${startLabel} &rarr; ${endLabel} &bull; ${numC} gig${numC > 1 ? 's' : ''}</div>
+        <div class="day-summary-text">${startLabel} &rarr; ${endLabel} &bull; ${numC} concert${numC === 1 ? '' : 's'}</div>
         <div class="day-summary-bar">${segmentsHTML}</div>
         <div class="day-summary-labels">${labelsHTML}</div>
       `;
@@ -487,7 +523,7 @@ function updateSelectedArtists() {
         const conflict = !parsed.unscheduled && hasConflict(entry, Array.from(selectedArtists[day]));
         if (conflict) item.classList.add("conflict");
 
-        // amigos que vão a este concerto
+        // Friends attending this concert.
         const attendingFriends = friendsData.filter(f => friendAttends(f, day, parsed.artist));
         let friendsHTML = '';
         if (attendingFriends.length > 0) {
@@ -503,7 +539,7 @@ function updateSelectedArtists() {
           <div class="schedule-item-content">
             <div class="schedule-artist">${parsed.artist}</div>
             <div class="schedule-details">
-              <span class="stage-badge">Horário por anunciar</span>
+              <span class="stage-badge">Time TBA</span>
               ${friendsHTML}
             </div>
           </div>
@@ -567,7 +603,7 @@ function saveSelectedArtists() {
   }
 }
 
-// ── exportar imagem ──────────────────────────────────────────────────────
+// ── export image ─────────────────────────────────────────────────────────
 document.getElementById('download-image').addEventListener('click', async () => {
   const selectedArtistsDiv = document.querySelector('.selected-artists');
   const button = document.getElementById('download-image');
@@ -664,7 +700,7 @@ document.getElementById('download-image').addEventListener('click', async () => 
   button.style.display = 'block';
 });
 
-// Funções de Interface
+// Interface helpers
 function showFlash(message) {
   const flash = document.getElementById('flash-message');
   flash.textContent = message;
@@ -703,7 +739,7 @@ document.getElementById('group-code-display').addEventListener('click', async ()
   }
 });
 
-// criar o grupo
+// Create a group.
 document.getElementById('create-group').addEventListener('click', () => {
   document.getElementById('create-modal').style.display = 'flex';
   document.getElementById('create-name-input').focus();
@@ -727,7 +763,7 @@ document.getElementById('create-confirm').addEventListener('click', () => {
   }
 });
 
-// entrar num grupo
+// Join a group.
 document.getElementById('join-group').addEventListener('click', () => {
   document.getElementById('join-modal').style.display = 'flex';
   document.getElementById('join-code-input').focus();
@@ -763,7 +799,7 @@ document.getElementById('join-confirm').addEventListener('click', async () => {
   }
 });
 
-// sair de um grupo
+// Leave a group.
 document.getElementById('leave-group').addEventListener('click', () => {
   document.getElementById('leave-modal').style.display = 'flex';
 });
@@ -806,7 +842,7 @@ document.getElementById('leave-confirm').addEventListener('click', async () => {
   showFlash("You left the group.");
 });
 
-// lógica de limpar horário removida
+// Schedule-clearing logic was removed.
 
 
 updateSelectedArtists();

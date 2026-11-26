@@ -115,7 +115,21 @@ body {
 .festival-option:focus-visible {
   outline: 3px solid color-mix(in srgb, var(--festival-primary) 35%, transparent); outline-offset: 3px;
 }
+.day-filter {
+  position: sticky; top: 0; z-index: 20; display: flex; justify-content: center; gap: 0.45rem;
+  margin: 0 0 1.25rem; padding: 0.75rem 0.4rem; overflow-x: auto;
+  background: color-mix(in srgb, var(--festival-background) 90%, transparent);
+  backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); scrollbar-width: none;
+}
+.day-filter::-webkit-scrollbar { display: none; }
+.day-filter-option {
+  flex: 0 0 auto; padding: 0.6rem 1rem; border: 1px solid var(--border);
+  border-radius: 999px; background: var(--card); color: var(--muted);
+  font: inherit; font-size: 0.8rem; font-weight: 700; cursor: pointer;
+}
+.day-filter-option[aria-pressed="true"] { border-color: transparent; background: var(--selected); color: var(--text); }
 .day-container { margin-bottom: 3rem; padding: 0 2rem; }
+.day-container[hidden] { display: none; }
 .day-container > h2 { font-size: 1.1rem; font-weight: 900; text-transform: uppercase; margin-bottom: 1rem; letter-spacing: -0.04em; }
 table {
   width: 100%; border-collapse: collapse;
@@ -161,7 +175,7 @@ td.selected { position: relative; color: white; font-weight: 700; overflow: hidd
 .selected-title-group { display: flex; flex-direction: column; gap: 0.35rem; }
 .selected-kicker { font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.18em; font-weight: 700; color: var(--festival-primary); }
 .selected-artists h2 {
-  margin: 0; font-family: "Cormorant Garamond", serif;
+  margin: 0; font-family: var(--festival-title-font);
   font-size: clamp(2.2rem, 5vw, 3.5rem); font-weight: 500; line-height: 0.9; letter-spacing: -0.05em;
 }
 .selected-divider { display: none; }
@@ -395,6 +409,7 @@ td.selected .concert-artist, td.selected .concert-time { color: white; }
   .hero-wordmark-layout .hero-wordmark span { font-size: clamp(1.3rem, 7.2vw, 3rem); }
   .hero-wordmark-layout .hero-text span:first-child,
   .hero-wordmark-layout .hero-text span:last-child { font-size: 0.65rem; }
+  .day-filter { justify-content: flex-start; margin-bottom: 1rem; }
   .selected-artists { margin: 1rem; padding: 1rem; border-radius: 1.2rem; }
   .selected-header { flex-direction: column; align-items: stretch; }
   .selected-artists h2 { font-size: 2rem; }

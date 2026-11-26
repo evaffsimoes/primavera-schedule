@@ -32,6 +32,7 @@ if (festivalTheme.highlight) rootStyles.setProperty("--festival-highlight", fest
 if (festivalTheme.clearDayBackground) rootStyles.setProperty("--clear-day-background", festivalTheme.clearDayBackground);
 if (festivalTheme.background) rootStyles.setProperty("--festival-background", festivalTheme.background);
 if (festivalTheme.surface) rootStyles.setProperty("--festival-surface", festivalTheme.surface);
+if (festival.branding) rootStyles.setProperty("--festival-title-font", '"Arial Black", Arial, sans-serif');
 const selectedArtists = {};
 const container = document.getElementById("schedule");
 const selectedContainer = document.getElementById("selected-artists-list");

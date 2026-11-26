@@ -10,6 +10,7 @@
   --festival-secondary: #f4a8c7;
   --festival-highlight: #ff4f8b;
   --clear-day-background: var(--festival-surface);
+  --festival-title-font: "Cormorant Garamond", serif;
   --pink-light: var(--festival-secondary);
   --pink: var(--festival-primary);
   --pink-strong: var(--festival-highlight);
@@ -40,14 +41,14 @@ body {
 .hero-wordmark[hidden] { display: none; }
 .hero-wordmark {
   display: flex; flex-direction: column; align-items: flex-end;
-  color: var(--text); font-family: "Arial Black", Arial, sans-serif;
+  color: var(--text); font-family: var(--festival-title-font);
   font-weight: 900; line-height: 0.72; letter-spacing: -0.09em; text-transform: lowercase;
 }
 .hero-wordmark span:first-child { font-size: clamp(3rem, 7vw, 6rem); }
 .hero-wordmark span:last-child { margin-left: 0.55em; font-size: clamp(2.2rem, 5vw, 4rem); }
 .hero-text { display: flex; flex-direction: column; line-height: 0.9; }
 .hero-text span:first-child {
-  font-family: "Cormorant Garamond", serif;
+  font-family: var(--festival-title-font);
   font-size: clamp(3rem, 7vw, 5.5rem);
   font-weight: 600; letter-spacing: -0.06em; line-height: 0.85;
 }
@@ -60,7 +61,7 @@ body {
 .hero-wordmark-layout .hero-wordmark { align-items: center; }
 .hero-wordmark-layout .hero-text { align-items: center; gap: 0.2rem; line-height: 1; }
 .hero-wordmark-layout .hero-text span:first-child {
-  font-family: "Arial Black", Arial, sans-serif; font-size: clamp(1.25rem, 3vw, 2rem);
+  font-family: var(--festival-title-font); font-size: clamp(1.25rem, 3vw, 2rem);
   font-weight: 900; letter-spacing: 0.14em; line-height: 1; text-transform: uppercase;
 }
 .hero-wordmark-layout .hero-text span:last-child {
@@ -311,7 +312,7 @@ td.selected .concert-artist, td.selected .concert-time { color: white; }
   width: 90%; max-width: 400px; box-shadow: 0 20px 60px rgba(0,0,0,0.25);
   text-align: center;
 }
-.modal-content h3 { margin-top: 0; margin-bottom: 0.5rem; font-family: "Cormorant Garamond", serif; font-size: 2.2rem; color: #111; }
+.modal-content h3 { margin-top: 0; margin-bottom: 0.5rem; font-family: var(--festival-title-font); font-size: 2.2rem; color: #111; }
 .modal-content p { color: #555; margin-bottom: 1.5rem; font-weight: 500; }
 .modal-content input {
   width: 100%; padding: 0.8rem 1rem; border-radius: 0.8rem;
